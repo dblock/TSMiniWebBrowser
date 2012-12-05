@@ -370,6 +370,10 @@ enum actionSheetButtonIndex {
     else if (mode == TSMiniWebBrowserModeNavigation && self.navigationController.tabBarController != nil) {
         [actionSheet showFromTabBar:self.navigationController.tabBarController.tabBar];
     }
+    else if (showActionButton && (mode == TSMiniWebBrowserModeModal)) {
+        UIBarButtonItem* actionButton = [[toolBar items] lastObject];
+        [actionSheet showFromBarButtonItem:actionButton animated:YES];
+    }
     else {
         [actionSheet showInView:self.view];
     }
