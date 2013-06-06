@@ -58,12 +58,14 @@ typedef enum {
     BOOL showReloadButton;
     BOOL showActionButton;
     UIBarStyle barStyle;
+    UIStatusBarStyle statusBarStyle;
 	UIColor *barTintColor;
     NSString *modalDismissButtonTitle;
     NSString *forcedTitleBarText;
     
     // State control
     UIBarStyle originalBarStyle;
+    UIStatusBarStyle originalStatusBarStyle;
 }
 
 @property (assign) id<TSMiniWebBrowserDelegate> delegate;
@@ -74,6 +76,7 @@ typedef enum {
 @property (nonatomic, assign) BOOL showReloadButton;
 @property (nonatomic, assign) BOOL showActionButton;
 @property (nonatomic, assign) UIBarStyle barStyle;
+@property (nonatomic, assign) UIStatusBarStyle statusBarStyle;
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) NSString *modalDismissButtonTitle;
 @property (nonatomic, strong) NSString *domainLockList;
