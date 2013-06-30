@@ -80,7 +80,11 @@ enum actionSheetButtonIndex {
     if ( webView.loading ) {
         [webView stopLoading];
     }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_5_0
+	[self dismissViewControllerAnimated:YES completion:nil];
+#else
     [self dismissModalViewControllerAnimated:YES];
+#endif
     
     // Notify the delegate
     if (self.delegate != NULL && [self.delegate respondsToSelector:@selector(tsMiniWebBrowserDidDismiss)]) {
