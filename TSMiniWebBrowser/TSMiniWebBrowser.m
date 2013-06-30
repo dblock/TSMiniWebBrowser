@@ -196,9 +196,10 @@ enum actionSheetButtonIndex {
     
     webView.delegate = self;
 	
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-	webView.scrollView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-#endif
+	if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
+		// On iOS7 the webview can be seen through the navigationbar
+		webView.scrollView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+	}
     
     // Load the URL in the webView
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:urlToLoad];
