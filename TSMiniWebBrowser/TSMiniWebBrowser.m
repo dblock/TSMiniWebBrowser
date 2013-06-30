@@ -195,6 +195,10 @@ enum actionSheetButtonIndex {
     webView.scalesPageToFit = YES;
     
     webView.delegate = self;
+	
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
+	webView.scrollView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+#endif
     
     // Load the URL in the webView
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:urlToLoad];
