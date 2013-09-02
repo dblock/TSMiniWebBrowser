@@ -25,6 +25,7 @@
 //
 
 #import "TSMiniWebBrowser.h"
+#import "DZScrollingInspector.h"
 
 @implementation TSMiniWebBrowser
 
@@ -265,6 +266,27 @@ enum actionSheetButtonIndex {
         [self initTitleBar];
     }
     
+    
+    UIView *theBar = nil;
+    switch (mode) {
+        case TSMiniWebBrowserModeNavigation:
+            theBar = self.navigationController.navigationBar;
+            break;
+        case TSMiniWebBrowserModeModal:
+            theBar = navigationBarModal;
+            break;
+            
+        default:
+            break;
+    }
+    
+    if (theBar) {    
+        self.scrollingInspector = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
+                                                                           andTargetObject:theBar
+                                                                  andTargetPropertyKeyPath:@"frame"
+                                                                           andSetterOption:DZScrollingInspectorTargetPropertySetterOptionFrameOriginY];
+    }
+        
     // Status bar style
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle animated:YES];
     

@@ -28,6 +28,7 @@
 		6F96DB7714E014620088FAFB /* first@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F96DB7314E014620088FAFB /* first@2x.png */; };
 		6F96DB7814E014620088FAFB /* second.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F96DB7414E014620088FAFB /* second.png */; };
 		6F96DB7914E014620088FAFB /* second@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F96DB7514E014620088FAFB /* second@2x.png */; };
+		9235822C17D4BFA700A54C0A /* DZScrollingInspector.m in Sources */ = {isa = PBXBuildFile; fileRef = 9235822B17D4BFA700A54C0A /* DZScrollingInspector.m */; };
 		E2EC79A2161033B2002A923D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E2EC79A1161033B2002A923D /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,8 @@
 		6F96DB7314E014620088FAFB /* first@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first@2x.png"; sourceTree = "<group>"; };
 		6F96DB7414E014620088FAFB /* second.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = second.png; sourceTree = "<group>"; };
 		6F96DB7514E014620088FAFB /* second@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "second@2x.png"; sourceTree = "<group>"; };
+		9235822A17D4BFA700A54C0A /* DZScrollingInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DZScrollingInspector.h; sourceTree = "<group>"; };
+		9235822B17D4BFA700A54C0A /* DZScrollingInspector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DZScrollingInspector.m; sourceTree = "<group>"; };
 		E2EC79A1161033B2002A923D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -138,6 +141,8 @@
 				6F69CE2414C63D0200BB6C57 /* images */,
 				6F69CDD214C636E100BB6C57 /* TSMiniWebBrowser.h */,
 				6F69CDD314C636E100BB6C57 /* TSMiniWebBrowser.m */,
+				9235822A17D4BFA700A54C0A /* DZScrollingInspector.h */,
+				9235822B17D4BFA700A54C0A /* DZScrollingInspector.m */,
 			);
 			path = TSMiniWebBrowser;
 			sourceTree = "<group>";
@@ -245,6 +250,7 @@
 				6F69CDC514C6339C00BB6C57 /* AppDelegate.m in Sources */,
 				6F69CDC814C6339C00BB6C57 /* ViewController.m in Sources */,
 				6F69CDD514C636E100BB6C57 /* TSMiniWebBrowser.m in Sources */,
+				9235822C17D4BFA700A54C0A /* DZScrollingInspector.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

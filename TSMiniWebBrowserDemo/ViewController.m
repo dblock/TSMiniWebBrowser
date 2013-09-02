@@ -75,7 +75,7 @@
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
-- (IBAction)buttonTouchUp:(id)sender {
+- (IBAction)openBrowserNavigationMode:(id)sender {
     TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
     webBrowser.delegate = self;
 //    webBrowser.showURLStringOnActionSheetTitle = YES;
@@ -87,13 +87,27 @@
     
     webBrowser.barStyle = UIBarStyleBlack;
     
-    if (webBrowser.mode == TSMiniWebBrowserModeModal) {
-        webBrowser.modalDismissButtonTitle = @"Home";
-        [self presentModalViewController:webBrowser animated:YES];
-    } else if(webBrowser.mode == TSMiniWebBrowserModeNavigation) {
-        [self.navigationController pushViewController:webBrowser animated:YES];
-    }
+    [self.navigationController pushViewController:webBrowser animated:YES];
 }
+
+- (IBAction)openBrowserModalMode:(id)sender {
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+    webBrowser.delegate = self;
+    //    webBrowser.showURLStringOnActionSheetTitle = YES;
+    //    webBrowser.showPageTitleOnTitleBar = YES;
+    //    webBrowser.showActionButton = YES;
+    //    webBrowser.showReloadButton = YES;
+    //    [webBrowser setFixedTitleBarText:@"Test Title Text"]; // This has priority over "showPageTitleOnTitleBar".
+    webBrowser.mode = TSMiniWebBrowserModeModal;
+    
+    webBrowser.barStyle = UIBarStyleBlack;
+    
+    webBrowser.modalDismissButtonTitle = @"Home";
+    
+    [self presentModalViewController:webBrowser animated:YES];
+}
+
+
 
 #pragma mark - TSMiniWebBrowserDelegate
 

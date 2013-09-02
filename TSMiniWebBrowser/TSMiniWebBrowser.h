@@ -26,6 +26,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class DZScrollingInspector;
+
 @protocol TSMiniWebBrowserDelegate <NSObject>
 @optional
 -(void) tsMiniWebBrowserDidDismiss;
@@ -66,6 +68,9 @@ typedef enum {
     // State control
     UIBarStyle originalBarStyle;
     UIStatusBarStyle originalStatusBarStyle;
+    
+    // Scrolling inspector
+    DZScrollingInspector *_scrollingInspector;
 }
 
 @property (assign) id<TSMiniWebBrowserDelegate> delegate;
@@ -81,6 +86,7 @@ typedef enum {
 @property (nonatomic, strong) NSString *modalDismissButtonTitle;
 @property (nonatomic, strong) NSString *domainLockList;
 @property (nonatomic, strong) NSString *currentURL;
+@property (nonatomic, strong) DZScrollingInspector *scrollingInspector;
 
 // Public Methods
 - (id)initWithUrl:(NSURL*)url;
