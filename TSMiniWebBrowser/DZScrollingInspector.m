@@ -10,7 +10,9 @@
 
 @implementation DZScrollingInspector
 
-- (id)initWithObservedScrollView:(UIScrollView *)scrollView andTargetObject:(NSObject *)target andTargetPropertyKeyPath:(NSString *)keypath andSetterOption:(DZScrollingInspectorTargetPropertySetterOption)setterOption
+@synthesize lowerLimit = _targetPropertyLowerLimit, upperLimit = _targetPropertyUpperLimit;
+
+- (id)initWithObservedScrollView:(UIScrollView *)scrollView andTargetObject:(NSObject *)target andTargetPropertyKeyPath:(NSString *)keypath andSetterOption:(DZScrollingInspectorTargetPropertySetterOption)setterOption andLowerLimit:(CGFloat)lowerLimit andUpperLimit:(CGFloat)upperLimit
 {
     if (self = [super init])
     {
@@ -23,8 +25,10 @@
         _targetObject = target;
         _targetKeyPath = keypath;
         _targetPropertySetterOption = setterOption;
+        _targetPropertyLowerLimit = lowerLimit;
+        _targetPropertyUpperLimit = upperLimit;
         
-        _targetPropertyInitialValue = 0.0f;
+        _targetPropertyInitialValue = [self getTargetValueForKeypathAccordingToSetterOption];
         
         switch (setterOption) {
             case DZScrollingInspectorTargetPropertySetterOptionNumber:
@@ -106,7 +110,7 @@
         offset = _offset;
     }
     
-    [self assumeShiftDeltaForTargetAccordingToOffset:offset andInset:inset];
+    [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
     
     /*
      Be sure to call the superclass's implementation *if it implements it*.
@@ -119,30 +123,96 @@
      */
 }
 
-- (void)assumeShiftDeltaForTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
+- (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
 {
+    
+    NSLog(@"target %@, lowerLimit %f, upperLimit %f", _targetObject, _targetPropertyLowerLimit, _targetPropertyUpperLimit);
+    
     // assume scroll direction
     DZScrollDirection scrollDirection = DZScrollDirectionNone;
-    if (_offset < newOffset)
+    if (_offset < newOffset) {
         scrollDirection = DZScrollDirectionUp;
-    else if (_offset > newOffset)
+    }
+    else if (_offset > newOffset) {
         scrollDirection = DZScrollDirectionDown;
+    }
     _scrollDirection = scrollDirection;
     
     // calculate movement delta
     CGFloat delta = (newInset + newOffset) - (_inset + _offset);
     
-    if (delta > 0 && ((newInset + newOffset) > 0)) {
-        NSLog(@"up");
-        //CGFloat shiftedY = _trackedView.origin.y - yDelta;
-        
+    CGFloat existingValue = [self getTargetValueForKeypathAccordingToSetterOption];
     
+    BOOL existingValuePassesLimitation = NO;
+    CGFloat directionCoefficient = 1.0f;
+    
+    if (_targetPropertyLowerLimit < _targetPropertyUpperLimit &&
+        existingValue >= _targetPropertyLowerLimit && existingValue <= _targetPropertyUpperLimit) {
+        existingValuePassesLimitation = YES;
+        directionCoefficient = 1.0f;
     }
+    else if (_targetPropertyLowerLimit > _targetPropertyUpperLimit &&
+         existingValue <= _targetPropertyLowerLimit && existingValue >= _targetPropertyUpperLimit) {
+        existingValuePassesLimitation = YES;
+        directionCoefficient = -1.0f;
+    }
+    
+    
+    if (existingValuePassesLimitation) {
+        CGFloat shiftedValue = existingValue + delta * directionCoefficient;
+        shiftedValue = [DZScrollingInspector clampFloat:shiftedValue withMinimum:_targetPropertyLowerLimit andMaximum:_targetPropertyUpperLimit];
+        
+        NSLog(@"existing %f, shifted %f", existingValue, shiftedValue);
+        
+        [self changeTargetValueForKeypathAccordingToSetterOption:shiftedValue];
+    }
+    
+    
+    
+    
+    
 
 
     // set stored values
     _offset = newOffset;
     _inset = newInset;
+}
+
+- (CGFloat)getTargetValueForKeypathAccordingToSetterOption
+{
+    CGFloat result = 0.0f;
+    switch (_targetPropertySetterOption) {
+        case DZScrollingInspectorTargetPropertySetterOptionFrameOriginY:
+        {
+            NSValue *val = [_targetObject valueForKeyPath:_targetKeyPath];
+            CGRect frame = val.CGRectValue;
+            result = frame.origin.y;
+        }
+            break;
+            
+        default:
+            
+            break;
+    }
+    return result;
+}
+
+- (void)changeTargetValueForKeypathAccordingToSetterOption:(CGFloat)newValue
+{
+    switch (_targetPropertySetterOption) {
+        case DZScrollingInspectorTargetPropertySetterOptionFrameOriginY:
+        {
+            NSValue *val = [_targetObject valueForKeyPath:_targetKeyPath];
+            CGRect frame = val.CGRectValue;
+            frame.origin.y = newValue;
+            [_targetObject setValue:[NSValue valueWithCGRect:frame] forKeyPath:_targetKeyPath];
+        }
+            break;
+            
+        default:
+            
+            break;
+    }
 }
 
 
@@ -165,6 +235,13 @@
 -(void)dealloc
 {
     [self unregisterForChangeNotification];
+}
+
+#pragma mark - Static helpers
++(CGFloat)clampFloat:(CGFloat)value withMinimum:(CGFloat)min andMaximum:(CGFloat)max {
+    CGFloat realMin = min < max ? min : max;
+    CGFloat realMax = max >= min ? max : min;
+    return MAX(realMin, MIN(realMax, value));
 }
 
 @end

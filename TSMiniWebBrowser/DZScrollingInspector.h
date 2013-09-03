@@ -29,6 +29,8 @@ typedef enum {
     NSString *_targetKeyPath;
     DZScrollingInspectorTargetPropertySetterOption _targetPropertySetterOption;
     CGFloat _targetPropertyInitialValue;
+    CGFloat _targetPropertyLowerLimit;
+    CGFloat _targetPropertyUpperLimit;
     
     CGFloat _inset;
     CGFloat _offset;
@@ -36,7 +38,16 @@ typedef enum {
     BOOL _isSuspended;
     DZScrollDirection _scrollDirection;
 }
--(id)initWithObservedScrollView:(UIScrollView*)scrollView andTargetObject:(NSObject*)target andTargetPropertyKeyPath:(NSString*)keypath andSetterOption:(DZScrollingInspectorTargetPropertySetterOption)setterOption;
+-(id)initWithObservedScrollView:(UIScrollView*)scrollView
+                andTargetObject:(NSObject*)target
+       andTargetPropertyKeyPath:(NSString*)keypath
+andSetterOption:(DZScrollingInspectorTargetPropertySetterOption)setterOption
+                  andLowerLimit:(CGFloat)lowerLimit
+                  andUpperLimit:(CGFloat)upperLimit;
+
+@property CGFloat upperLimit;
+@property CGFloat lowerLimit;
+
 -(void)suspend;
 -(void)resume;
 

@@ -69,8 +69,9 @@ typedef enum {
     UIBarStyle originalBarStyle;
     UIStatusBarStyle originalStatusBarStyle;
     
-    // Scrolling inspector
-    DZScrollingInspector *_scrollingInspector;
+    // Scrolling inspectors
+    DZScrollingInspector *_scrollingInspectorForTopBar;
+    DZScrollingInspector *_scrollingInspectorForBottomBar;
 }
 
 @property (assign) id<TSMiniWebBrowserDelegate> delegate;
@@ -86,7 +87,8 @@ typedef enum {
 @property (nonatomic, strong) NSString *modalDismissButtonTitle;
 @property (nonatomic, strong) NSString *domainLockList;
 @property (nonatomic, strong) NSString *currentURL;
-@property (nonatomic, strong) DZScrollingInspector *scrollingInspector;
+@property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForTopBar;
+@property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForBottomBar;
 
 // Public Methods
 - (id)initWithUrl:(NSURL*)url;

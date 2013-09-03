@@ -32,5 +32,7 @@
 }
 - (IBAction)openBrowserNavigationMode:(id)sender;
 - (IBAction)openBrowserModalMode:(id)sender;
+- (IBAction)openBrowserTabbarModeOne:(id)sender;
+- (IBAction)openBrowserTabbarModeTwo:(id)sender;
 
 @end

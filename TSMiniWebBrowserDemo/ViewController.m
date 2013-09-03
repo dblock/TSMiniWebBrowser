@@ -76,7 +76,7 @@
 }
 
 - (IBAction)openBrowserNavigationMode:(id)sender {
-    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
     webBrowser.delegate = self;
 //    webBrowser.showURLStringOnActionSheetTitle = YES;
 //    webBrowser.showPageTitleOnTitleBar = YES;
@@ -91,13 +91,8 @@
 }
 
 - (IBAction)openBrowserModalMode:(id)sender {
-    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
     webBrowser.delegate = self;
-    //    webBrowser.showURLStringOnActionSheetTitle = YES;
-    //    webBrowser.showPageTitleOnTitleBar = YES;
-    //    webBrowser.showActionButton = YES;
-    //    webBrowser.showReloadButton = YES;
-    //    [webBrowser setFixedTitleBarText:@"Test Title Text"]; // This has priority over "showPageTitleOnTitleBar".
     webBrowser.mode = TSMiniWebBrowserModeModal;
     
     webBrowser.barStyle = UIBarStyleBlack;
@@ -105,6 +100,41 @@
     webBrowser.modalDismissButtonTitle = @"Home";
     
     [self presentModalViewController:webBrowser animated:YES];
+}
+
+- (IBAction)openBrowserTabbarModeOne:(id)sender {
+    
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
+    webBrowser.delegate = self;
+    webBrowser.mode = TSMiniWebBrowserModeTabBar;
+    webBrowser.barStyle = UIBarStyleBlack;
+    
+    UIViewController *fooController = [[UIViewController alloc] init];
+    UITabBarController *tabBarController = [[UITabBarController alloc] init];
+    
+    
+    [tabBarController addChildViewController:webBrowser];
+    [tabBarController addChildViewController:fooController];
+    
+    [[UIApplication sharedApplication] keyWindow].rootViewController = tabBarController;
+    
+}
+
+- (IBAction)openBrowserTabbarModeTwo:(id)sender {
+    
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
+    webBrowser.delegate = self;
+    webBrowser.mode = TSMiniWebBrowserModeTabBar;
+    webBrowser.barStyle = UIBarStyleBlack;
+    
+    UIViewController *fooController = [[UIViewController alloc] init];
+    UITabBarController *tabBarController = [[UITabBarController alloc] init];
+    
+    
+    [tabBarController addChildViewController:webBrowser];
+    [tabBarController addChildViewController:fooController];
+    
+    [self.navigationController pushViewController:tabBarController animated:YES];
 }
 
 

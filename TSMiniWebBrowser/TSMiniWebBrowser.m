@@ -41,8 +41,11 @@
 @synthesize barTintColor;
 @synthesize domainLockList;
 @synthesize currentURL;
+@synthesize scrollingInspectorForTopBar;
+@synthesize scrollingInspectorForBottomBar;
 
 #define kToolBarHeight  44
+#define kNavBarHeight  44
 #define kTabBarHeight   49
 
 enum actionSheetButtonIndex {
@@ -111,7 +114,7 @@ enum actionSheetButtonIndex {
     titleBar.leftBarButtonItem = buttonDone;
     
     CGFloat width = self.view.frame.size.width;
-    navigationBarModal = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
+    navigationBarModal = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, width, kNavBarHeight)];
     //navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     navigationBarModal.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     navigationBarModal.barStyle = barStyle;
@@ -183,25 +186,45 @@ enum actionSheetButtonIndex {
 
 -(void) initWebView {
     CGSize viewSize = self.view.frame.size;
+//    if (mode == TSMiniWebBrowserModeModal) {
+//        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, kToolBarHeight, viewSize.width, viewSize.height-kToolBarHeight*2)];
+//    } else if(mode == TSMiniWebBrowserModeNavigation) {
+//        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewSize.width, viewSize.height-kToolBarHeight)];
+//    } else if(mode == TSMiniWebBrowserModeTabBar) {
+//        self.view.backgroundColor = [UIColor redColor];
+//        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, kToolBarHeight-1, viewSize.width, viewSize.height-kToolBarHeight+1)];
+//    }
+    
+    CGRect webViewFrame = CGRectMake(0, 0, viewSize.width, viewSize.height);
+    UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(kNavBarHeight, 0, kToolBarHeight, 0);
+    
     if (mode == TSMiniWebBrowserModeModal) {
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, kToolBarHeight, viewSize.width, viewSize.height-kToolBarHeight*2)];
+        
     } else if(mode == TSMiniWebBrowserModeNavigation) {
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewSize.width, viewSize.height-kToolBarHeight)];
+        if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
+            // On iOS7 the webview can be seen through the navigationbar
+        }
+        else {
+            // On iOS below 7 we should make webView be under the navigationbar
+            CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
+            webViewFrame = CGRectMake(0, - navBarHeight, viewSize.width, viewSize.height+navBarHeight);
+            webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, kToolBarHeight, 0);
+        }
+        
     } else if(mode == TSMiniWebBrowserModeTabBar) {
         self.view.backgroundColor = [UIColor redColor];
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, kToolBarHeight-1, viewSize.width, viewSize.height-kToolBarHeight+1)];
     }
+    
+    webView = [[UIWebView alloc] initWithFrame:webViewFrame];
+    webView.scrollView.contentInset = webViewContentInset;
+    
+    
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:webView];
     
     webView.scalesPageToFit = YES;
     
     webView.delegate = self;
-	
-	if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
-		// On iOS7 the webview can be seen through the navigationbar
-		webView.scrollView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-	}
     
     // Load the URL in the webView
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:urlToLoad];
@@ -255,11 +278,11 @@ enum actionSheetButtonIndex {
     
     originalStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
     
-    // Init tool bar
-    [self initToolBar];
-    
     // Init web view
     [self initWebView];
+    
+    // Init tool bar
+    [self initToolBar];
     
     // Init title bar if presented modally
     if (mode == TSMiniWebBrowserModeModal) {
@@ -267,24 +290,41 @@ enum actionSheetButtonIndex {
     }
     
     
-    UIView *theBar = nil;
+    UIView *topBar = nil;
+    UIView *bottomBar = nil;
     switch (mode) {
         case TSMiniWebBrowserModeNavigation:
-            theBar = self.navigationController.navigationBar;
+            topBar = self.navigationController.navigationBar;
+            bottomBar = toolBar;
             break;
         case TSMiniWebBrowserModeModal:
-            theBar = navigationBarModal;
+            topBar = navigationBarModal;
+            bottomBar = toolBar;
             break;
             
+        case TSMiniWebBrowserModeTabBar:
+            topBar = toolBar;
+            break;
         default:
             break;
     }
     
-    if (theBar) {    
-        self.scrollingInspector = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
-                                                                           andTargetObject:theBar
+    if (topBar) {    
+        _scrollingInspectorForTopBar = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
+                                                                           andTargetObject:topBar
                                                                   andTargetPropertyKeyPath:@"frame"
-                                                                           andSetterOption:DZScrollingInspectorTargetPropertySetterOptionFrameOriginY];
+                                                                           andSetterOption:DZScrollingInspectorTargetPropertySetterOptionFrameOriginY
+                                                                             andLowerLimit:topBar.frame.origin.y
+                                                                             andUpperLimit:topBar.frame.origin.y-topBar.frame.size.height];
+    }
+    
+    if (bottomBar) {
+        _scrollingInspectorForBottomBar = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
+                                                                                andTargetObject:bottomBar
+                                                                       andTargetPropertyKeyPath:@"frame"
+                                                                                andSetterOption:DZScrollingInspectorTargetPropertySetterOptionFrameOriginY
+                                                                                  andLowerLimit:bottomBar.frame.origin.y
+                                                                                  andUpperLimit:bottomBar.frame.origin.y+bottomBar.frame.size.height];
     }
         
     // Status bar style
