@@ -218,7 +218,6 @@ enum actionSheetButtonIndex {
     webView = [[UIWebView alloc] initWithFrame:webViewFrame];
     webView.scrollView.contentInset = webViewContentInset;
     
-    
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:webView];
     
@@ -289,7 +288,23 @@ enum actionSheetButtonIndex {
         [self initTitleBar];
     }
     
+    [self performSelector:@selector(initScrollingInspectors) withObject:self afterDelay:0.1f];
+
     
+    // Status bar style
+    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle animated:YES];
+    
+    // UI state
+    buttonGoBack.enabled = NO;
+    buttonGoForward.enabled = NO;
+    if (forcedTitleBarText != nil) {
+        [self setTitleBarText:forcedTitleBarText];
+    }
+    
+}
+
+- (void)initScrollingInspectors
+{
     UIView *topBar = nil;
     UIView *bottomBar = nil;
     switch (mode) {
@@ -309,34 +324,23 @@ enum actionSheetButtonIndex {
             break;
     }
     
-    if (topBar) {    
+    if (topBar) {
         _scrollingInspectorForTopBar = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
-                                                                           andTargetObject:topBar
-                                                                  andTargetPropertyKeyPath:@"frame"
-                                                                           andSetterOption:DZScrollingInspectorTargetPropertySetterOptionFrameOriginY
-                                                                             andLowerLimit:topBar.frame.origin.y
-                                                                             andUpperLimit:topBar.frame.origin.y-topBar.frame.size.height];
+                                                                               andOffsetKeyPath:@"y"
+                                                                                andInsetKeypath:@"top"
+                                                                                andTargetObject:topBar
+                                                                  andTargetFramePropertyKeyPath:@"origin.y"
+                                                                                      andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(topBar.frame.origin.y, topBar.frame.origin.y-topBar.frame.size.height, 0, 0)];
     }
     
     if (bottomBar) {
         _scrollingInspectorForBottomBar = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
-                                                                                andTargetObject:bottomBar
-                                                                       andTargetPropertyKeyPath:@"frame"
-                                                                                andSetterOption:DZScrollingInspectorTargetPropertySetterOptionFrameOriginY
-                                                                                  andLowerLimit:bottomBar.frame.origin.y
-                                                                                  andUpperLimit:bottomBar.frame.origin.y+bottomBar.frame.size.height];
+                                                                                  andOffsetKeyPath:@"y"
+                                                                                   andInsetKeypath:@"top"
+                                                                                   andTargetObject:bottomBar
+                                                                     andTargetFramePropertyKeyPath:@"origin.y"
+                                                                                         andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(bottomBar.frame.origin.y, bottomBar.frame.origin.y+bottomBar.frame.size.height, 0, 0)];
     }
-        
-    // Status bar style
-    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle animated:YES];
-    
-    // UI state
-    buttonGoBack.enabled = NO;
-    buttonGoForward.enabled = NO;
-    if (forcedTitleBarText != nil) {
-        [self setTitleBarText:forcedTitleBarText];
-    }
-    
 }
 
 - (void)viewDidUnload

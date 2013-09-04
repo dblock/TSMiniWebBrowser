@@ -10,6 +10,7 @@
 
 #define DZScrollingInspector_CONTENT_OFFSET_KEYPATH @"contentOffset"
 #define DZScrollingInspector_CONTENT_INSET_KEYPATH @"contentInset"
+#define DZScrollingInspector_FRAME_KEYPATH @"frame"
 
 typedef enum {
     DZScrollDirectionNone,
@@ -22,16 +23,28 @@ typedef enum {
     DZScrollingInspectorTargetPropertySetterOptionFrameOriginY
 } DZScrollingInspectorTargetPropertySetterOption;
 
+typedef struct {
+    CGFloat max;
+    CGFloat min;
+} DZScrollingInspectorLimit;
+
+typedef struct {
+    DZScrollingInspectorLimit portraitLimit;
+    DZScrollingInspectorLimit landscapeLimit;
+} DZScrollingInspectorTwoOrientationsLimits;
+
+
+
 @interface DZScrollingInspector : NSObject
 {
     UIScrollView *_scrollView;
     NSObject *_targetObject;
-    NSString *_targetKeyPath;
-    DZScrollingInspectorTargetPropertySetterOption _targetPropertySetterOption;
-    CGFloat _targetPropertyInitialValue;
-    CGFloat _targetPropertyLowerLimit;
-    CGFloat _targetPropertyUpperLimit;
+    NSString *_targetFramePropertyKeyPath;
+    CGFloat _targetFramePropertyInitialValue;
+    DZScrollingInspectorTwoOrientationsLimits _limits;
     
+    NSString *_insetKeypath;
+    NSString *_offsetKeypath;
     CGFloat _inset;
     CGFloat _offset;
     
@@ -39,17 +52,17 @@ typedef enum {
     DZScrollDirection _scrollDirection;
 }
 -(id)initWithObservedScrollView:(UIScrollView*)scrollView
+               andOffsetKeyPath:(NSString*)offsetKeyPath
+                andInsetKeypath:(NSString*)insetKeyPath
                 andTargetObject:(NSObject*)target
-       andTargetPropertyKeyPath:(NSString*)keypath
-andSetterOption:(DZScrollingInspectorTargetPropertySetterOption)setterOption
-                  andLowerLimit:(CGFloat)lowerLimit
-                  andUpperLimit:(CGFloat)upperLimit;
+  andTargetFramePropertyKeyPath:(NSString*)keypath
+                      andLimits:(DZScrollingInspectorTwoOrientationsLimits)limits;
 
-@property CGFloat upperLimit;
-@property CGFloat lowerLimit;
+@property DZScrollingInspectorTwoOrientationsLimits limits;
 
 -(void)suspend;
 -(void)resume;
 
+DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLimitsMake(CGFloat portraitMin, CGFloat portraitMax, CGFloat landscapeMin, CGFloat landscapeMax);
 
 @end
