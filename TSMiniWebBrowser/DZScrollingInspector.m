@@ -23,13 +23,17 @@
     {
         // defaults
         _scrollDirection = DZScrollDirectionNone;
+        _lastScrollDirectionThatWasntNone = DZScrollDirectionNone;
         _isSuspended = NO;
+        _isAnimatingTargetObject = NO;
         
         // arguments to properties
         _scrollView = scrollView;
         _targetObject = target;
         _targetFramePropertyKeyPath = keypath;
         _limits = limits;
+        _offsetKeypath = offsetKeyPath;
+        _insetKeypath = insetKeyPath;
         
         // get more parameters from target
         _offset = [DZScrollingInspector contentOffsetValueForKey:offsetKeyPath fromObject:scrollView];
@@ -60,6 +64,12 @@
                      options:(NSKeyValueObservingOptionNew |
                               NSKeyValueObservingOptionOld)
                      context:NULL];
+    
+    [_scrollView addObserver:self
+                  forKeyPath: DZScrollingInspector_IS_DRAGGING_KEYPATH
+                     options:(NSKeyValueObservingOptionNew |
+                              NSKeyValueObservingOptionOld)
+                     context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -75,7 +85,7 @@
     
     if ([keyPath isEqual:DZScrollingInspector_CONTENT_OFFSET_KEYPATH]) {
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-        offset = newValue.CGPointValue.y;
+        offset = [DZScrollingInspector contentOffsetValueForKey:_offsetKeypath fromCGPoint:newValue.CGPointValue];
         NSLog(@"new offset %f", offset);
         
         offsetChanged = YES;
@@ -90,6 +100,14 @@
         insetChanged = YES;
     }
     
+    if ([keyPath isEqual:DZScrollingInspector_CONTENT_INSET_KEYPATH]) {
+        NSNumber *newValue = [change objectForKey:NSKeyValueChangeNewKey];
+        inset = newValue.UIEdgeInsetsValue.top;
+        NSLog(@"new isDragging %f", inset);
+        
+        insetChanged = YES;
+    }
+    
     
     if (offsetChanged) {
         inset = _inset;
@@ -98,8 +116,14 @@
         offset = _offset;
     }
     
-    [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
+    [self assumeScrollDirection:offset andInset:inset];
     
+    if (_scrollView.isDragging && !_isAnimatingTargetObject) {
+        [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
+    }
+    else if (!_scrollView.isDragging && ![self isLimitForCurrentInterfaceOrientationReached] && !_isAnimatingTargetObject) {
+        [self animateTargetToReachLimitForCurrentDirection];
+    }
     /*
      Be sure to call the superclass's implementation *if it implements it*.
      NSObject does not implement the method.
@@ -111,12 +135,12 @@
      */
 }
 
-- (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
-{
-    
-    NSLog(@"target %@, offset %f, inset %f", _targetObject, newOffset, newInset);
-    
-    // assume scroll direction
+- (void)unregisterForChangeNotification {
+    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_OFFSET_KEYPATH];
+    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
+}
+
+- (void)assumeScrollDirection:(CGFloat)newOffset andInset:(CGFloat)newInset {
     DZScrollDirection scrollDirection = DZScrollDirectionNone;
     if (_offset < newOffset) {
         scrollDirection = DZScrollDirectionUp;
@@ -124,7 +148,20 @@
     else if (_offset > newOffset) {
         scrollDirection = DZScrollDirectionDown;
     }
+    
+    if (scrollDirection != DZScrollDirectionNone) {
+        _lastScrollDirectionThatWasntNone = scrollDirection;
+    }
+    
     _scrollDirection = scrollDirection;
+}
+
+- (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
+{
+    
+    //NSLog(@"target %@, offset %f, inset %f", _targetObject, newOffset, newInset);
+    
+    
     
     // calculate movement delta
     CGFloat delta = (newInset + newOffset) - (_inset + _offset);
@@ -157,7 +194,7 @@
         CGFloat shiftedValue = existingValue + delta * directionCoefficient;
         shiftedValue = [DZScrollingInspector clampFloat:shiftedValue withMinimum:l.min andMaximum:l.max];
         
-        NSLog(@"existing %f, shifted %f", existingValue, shiftedValue);
+        //NSLog(@"existing %f, shifted %f", existingValue, shiftedValue);
         
         if (existingValue != shiftedValue) {
             [self setTargetValueForKeypathWithNewValue:shiftedValue];
@@ -168,6 +205,47 @@
     // set stored values
     _offset = newOffset;
     _inset = newInset;
+}
+
+- (void)animateTargetToReachLimitForCurrentDirection
+{
+    NSNumber *targetValueThatMatchesLimit = nil;
+    switch (_lastScrollDirectionThatWasntNone) {
+        case DZScrollDirectionDown:
+            targetValueThatMatchesLimit = [NSNumber numberWithFloat:[self limitForCurrentInterfaceOrientation].max];
+            break;
+            
+        case DZScrollDirectionUp:
+            targetValueThatMatchesLimit = [NSNumber numberWithFloat:[self limitForCurrentInterfaceOrientation].min];
+            break;
+            
+        case DZScrollDirectionNone:
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    NSLog(@"Animation should take place to value: %f", targetValueThatMatchesLimit.floatValue);
+    
+    if (targetValueThatMatchesLimit) {
+        if ([_targetObject isKindOfClass:[UIView class]]) {
+            [UIView animateWithDuration:0.1f delay:0.0f options:UIViewAnimationOptionAllowAnimatedContent animations:^{
+                _isAnimatingTargetObject = true;
+                [self setTargetValueForKeypathWithNewValue:targetValueThatMatchesLimit.floatValue];
+            } completion:^(BOOL finished) {
+                _isAnimatingTargetObject = false;
+            }];
+        }
+    }
+}
+
+- (BOOL)isLimitForCurrentInterfaceOrientationReached
+{
+    CGFloat currentTargetValue = [self getTargetCurrentValueForKeypath];
+    DZScrollingInspectorLimit currentLimit = [self limitForCurrentInterfaceOrientation];
+    return currentTargetValue == currentLimit.min || currentTargetValue == currentLimit.max;
 }
 
 - (DZScrollingInspectorLimit)limitForCurrentInterfaceOrientation
@@ -186,11 +264,6 @@
     [DZScrollingInspector setFrameValue:newValue forKey:_targetFramePropertyKeyPath forObject:_targetObject];
 }
 
-
-- (void)unregisterForChangeNotification {
-    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_OFFSET_KEYPATH];
-    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
-}
 
 
 -(void)suspend
@@ -251,7 +324,15 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     }
     
     NSValue *contentOffsetValue = [object valueForKeyPath:DZScrollingInspector_CONTENT_OFFSET_KEYPATH];
-    CGPoint contentOffsetPoint = contentOffsetValue.CGPointValue;
+    CGFloat contentOffsetFloat = [DZScrollingInspector contentOffsetValueForKey:key fromCGPoint:contentOffsetValue.CGPointValue];
+    return contentOffsetFloat;
+}
+
++(CGFloat)contentOffsetValueForKey:(NSString*)key fromCGPoint:(CGPoint)contentOffsetPoint
+{
+    if (!key) {
+        [NSException raise:NSInvalidArgumentException format:@"Argument 'key' must be non-nil"];
+    }
     
     NSDictionary *contentOffsetDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                              [NSNumber numberWithFloat:contentOffsetPoint.y], @"y",

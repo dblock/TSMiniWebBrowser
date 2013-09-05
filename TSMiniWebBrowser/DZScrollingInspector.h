@@ -8,9 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+/* 
+ the used UIView and UIScrollView properties keypaths defined here
+ in order to accomodate future possible renaming of these properties
+ */
 #define DZScrollingInspector_CONTENT_OFFSET_KEYPATH @"contentOffset"
 #define DZScrollingInspector_CONTENT_INSET_KEYPATH @"contentInset"
 #define DZScrollingInspector_FRAME_KEYPATH @"frame"
+#define DZScrollingInspector_IS_DRAGGING_KEYPATH @"isDragging"
 
 typedef enum {
     DZScrollDirectionNone,
@@ -38,9 +43,13 @@ typedef struct {
 @interface DZScrollingInspector : NSObject
 {
     UIScrollView *_scrollView;
+    BOOL _scrollViewIsDragging;
+    
     NSObject *_targetObject;
     NSString *_targetFramePropertyKeyPath;
     CGFloat _targetFramePropertyInitialValue;
+    BOOL _isAnimatingTargetObject;
+    
     DZScrollingInspectorTwoOrientationsLimits _limits;
     
     NSString *_insetKeypath;
@@ -50,6 +59,7 @@ typedef struct {
     
     BOOL _isSuspended;
     DZScrollDirection _scrollDirection;
+    DZScrollDirection _lastScrollDirectionThatWasntNone;
 }
 -(id)initWithObservedScrollView:(UIScrollView*)scrollView
                andOffsetKeyPath:(NSString*)offsetKeyPath
