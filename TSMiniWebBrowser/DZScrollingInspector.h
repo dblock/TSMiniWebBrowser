@@ -16,6 +16,7 @@
 #define DZScrollingInspector_CONTENT_INSET_KEYPATH @"contentInset"
 #define DZScrollingInspector_FRAME_KEYPATH @"frame"
 #define DZScrollingInspector_PAN_STATE_KEYPATH @"pan.state"
+#define DZScrollingInspector_ANIMATION_DURATION_PER_ONE_PIXEL 0.0068181818f
 
 typedef enum {
     DZScrollingInspectorTargetPropertySetterOptionNumber,

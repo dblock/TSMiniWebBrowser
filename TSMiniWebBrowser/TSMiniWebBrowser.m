@@ -378,7 +378,7 @@ enum actionSheetButtonIndex {
                                                                                 andInsetKeypath:@"top"
                                                                                 andTargetObject:topBar
                                                                   andTargetFramePropertyKeyPath:@"origin.y"
-                                                                                      andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(topBar.frame.origin.y, topBar.frame.origin.y-topBar.frame.size.height, 0, 0)];
+                                                                                      andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(topBar.frame.origin.y, topBar.frame.origin.y-topBar.frame.size.height, topBar.frame.origin.y, topBar.frame.origin.y-topBar.frame.size.height)];
     }
     
     if (bottomBar) {
@@ -387,7 +387,7 @@ enum actionSheetButtonIndex {
                                                                                    andInsetKeypath:@"top"
                                                                                    andTargetObject:bottomBar
                                                                      andTargetFramePropertyKeyPath:@"origin.y"
-                                                                                         andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(bottomBar.frame.origin.y, bottomBar.frame.origin.y+bottomBar.frame.size.height, 0, 0)];
+                                                                                         andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(bottomBar.frame.origin.y, bottomBar.frame.origin.y+bottomBar.frame.size.height, bottomBar.frame.origin.y, bottomBar.frame.origin.y+bottomBar.frame.size.height)];
     }
 }
 

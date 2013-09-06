@@ -86,7 +86,7 @@
     if ([keyPath isEqual:DZScrollingInspector_CONTENT_OFFSET_KEYPATH]) {
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
         offset = [DZScrollingInspector contentOffsetValueForKey:_offsetKeypath fromCGPoint:newValue.CGPointValue];
-        NSLog(@"new offset %f", offset);
+        
         if (offset != _offset)
             offsetChanged = YES;
     }
@@ -94,9 +94,9 @@
     
     if ([keyPath isEqual:DZScrollingInspector_CONTENT_INSET_KEYPATH]) {
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-        NSLog(@"INSETT VALUE %@", newValue);
+        
         inset = [DZScrollingInspector contentInsetValueForKey:_insetKeypath fromUIEdgeInsets:newValue.UIEdgeInsetsValue];
-        NSLog(@"new inset %f", inset);
+        
         if (inset != _inset)
             insetChanged = YES;
     }
@@ -121,7 +121,7 @@
                     break;
             }
         }
-        NSLog(@"new panState %i old panState %i", newPanState, oldPanState);
+        
     }
     
     if (offsetChanged) {
@@ -181,7 +181,7 @@
 - (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
 {
     
-    NSLog(@"target %@, newOffset %f, newInset %f, oldOffset %f, oldInset %f", _targetObject, newOffset, newInset, _offset, _inset);
+    
         
     // calculate movement delta
     CGFloat delta = (newInset + newOffset) - (_inset + _offset);
@@ -214,7 +214,7 @@
         CGFloat shiftedValue = existingValue + delta * directionCoefficient;
         shiftedValue = [DZScrollingInspector clampFloat:shiftedValue withMinimum:l.min andMaximum:l.max];
         
-        NSLog(@"existing %f, shifted %f", existingValue, shiftedValue);
+        
         
         if (existingValue != shiftedValue) {
             [self setTargetValueForKeypathWithNewValue:shiftedValue];
@@ -231,29 +231,41 @@
     CGFloat higherLimit = MAX(currentLimit.min, currentLimit.max);
     CGFloat distance = fabsf(higherLimit - lowerLimit);
     
+    
+    
     CGFloat halfPassed = lowerLimit + distance/2;
     
     
+    CGFloat distanceLeft = 0.0f;
     
     if (currentLimit.min < currentLimit.max) {
-        if (currentTargetValue < halfPassed)
+        if (currentTargetValue < halfPassed) {
             targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.min];
-        else
+            distanceLeft = currentTargetValue - currentLimit.min;
+        }
+        else {
             targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.max];
+            distanceLeft = currentLimit.max - currentTargetValue;
+        }
     }
     else {
-        if (currentTargetValue < halfPassed) 
+        if (currentTargetValue < halfPassed)  {
             targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.max];
-        else 
+            distanceLeft = currentTargetValue - currentLimit.max;
+        }
+        else {
             targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.min];
+            distanceLeft = currentLimit.min - currentTargetValue;
+        }
     }
     
     
-    NSLog(@"Animation should take place to value: %f", targetValueThatMatchesLimit.floatValue);
+    CGFloat animationDuration = distanceLeft * DZScrollingInspector_ANIMATION_DURATION_PER_ONE_PIXEL;
+    
     
     if (targetValueThatMatchesLimit) {
         if ([_targetObject isKindOfClass:[UIView class]]) {
-            [UIView animateWithDuration:0.1f
+            [UIView animateWithDuration:animationDuration
                                   delay:0.0f
                                 options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
@@ -393,7 +405,7 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     
     NSValue *contentInsetValue = [object valueForKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
     UIEdgeInsets contentInsetEdgeInsets = contentInsetValue.UIEdgeInsetsValue;
-    NSLog(@"INSETT %@", NSStringFromUIEdgeInsets(contentInsetEdgeInsets));
+    
     return [DZScrollingInspector contentInsetValueForKey:key fromUIEdgeInsets:contentInsetEdgeInsets];
 }
 
