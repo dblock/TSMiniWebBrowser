@@ -66,7 +66,7 @@
                      context:NULL];
     
     [_scrollView addObserver:self
-                  forKeyPath: DZScrollingInspector_IS_DRAGGING_KEYPATH
+                  forKeyPath: DZScrollingInspector_PAN_STATE_KEYPATH
                      options:(NSKeyValueObservingOptionNew |
                               NSKeyValueObservingOptionOld)
                      context:NULL];
@@ -82,6 +82,8 @@
     
     BOOL offsetChanged = NO;
     BOOL insetChanged = NO;
+    BOOL startedDragging = NO;
+    BOOL endedDragging = NO;
     
     if ([keyPath isEqual:DZScrollingInspector_CONTENT_OFFSET_KEYPATH]) {
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
@@ -94,20 +96,35 @@
     
     if ([keyPath isEqual:DZScrollingInspector_CONTENT_INSET_KEYPATH]) {
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-        inset = newValue.UIEdgeInsetsValue.top;
+        NSLog(@"INSETT VALUE %@", newValue);
+        inset = [DZScrollingInspector contentInsetValueForKey:_insetKeypath fromUIEdgeInsets:newValue.UIEdgeInsetsValue];
         NSLog(@"new inset %f", inset);
         
         insetChanged = YES;
     }
     
-    if ([keyPath isEqual:DZScrollingInspector_CONTENT_INSET_KEYPATH]) {
-        NSNumber *newValue = [change objectForKey:NSKeyValueChangeNewKey];
-        inset = newValue.UIEdgeInsetsValue.top;
-        NSLog(@"new isDragging %f", inset);
+    if ([keyPath isEqual:DZScrollingInspector_PAN_STATE_KEYPATH]) {
+        NSNumber *newNumber = [change objectForKey:NSKeyValueChangeNewKey];
+        NSNumber *oldNumber = [change objectForKey:NSKeyValueChangeOldKey];
+        UIGestureRecognizerState newPanState = newNumber.intValue;
+        UIGestureRecognizerState oldPanState = oldNumber.intValue;
         
-        insetChanged = YES;
+        if (newPanState != oldPanState) {
+            switch (newPanState) {
+                case UIGestureRecognizerStateBegan:
+                    startedDragging = YES;
+                    break;
+                    
+                case UIGestureRecognizerStateEnded:
+                    endedDragging = YES;
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        NSLog(@"new panState %i old panState %i", newPanState, oldPanState);
     }
-    
     
     if (offsetChanged) {
         inset = _inset;
@@ -116,14 +133,21 @@
         offset = _offset;
     }
     
-    [self assumeScrollDirection:offset andInset:inset];
+    if (insetChanged || offsetChanged) {
     
-    if (_scrollView.isDragging && !_isAnimatingTargetObject) {
-        [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
+        [self assumeScrollDirection:offset andInset:inset];
+        
+        if (_scrollView.isDragging && !_isAnimatingTargetObject) {
+            [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
+        }
     }
-    else if (!_scrollView.isDragging && ![self isLimitForCurrentInterfaceOrientationReached] && !_isAnimatingTargetObject) {
-        [self animateTargetToReachLimitForCurrentDirection];
+    else if (startedDragging || endedDragging) {
+        
+        if (endedDragging && ![self isLimitForCurrentInterfaceOrientationReached] && !_isAnimatingTargetObject) {
+            [self animateTargetToReachLimitForCurrentDirection];
+        }
     }
+    
     /*
      Be sure to call the superclass's implementation *if it implements it*.
      NSObject does not implement the method.
@@ -159,7 +183,7 @@
 - (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
 {
     
-    //NSLog(@"target %@, offset %f, inset %f", _targetObject, newOffset, newInset);
+    NSLog(@"target %@, offset %f, inset %f", _targetObject, newOffset, newInset);
     
     
     
@@ -194,7 +218,7 @@
         CGFloat shiftedValue = existingValue + delta * directionCoefficient;
         shiftedValue = [DZScrollingInspector clampFloat:shiftedValue withMinimum:l.min andMaximum:l.max];
         
-        //NSLog(@"existing %f, shifted %f", existingValue, shiftedValue);
+        NSLog(@"existing %f, shifted %f", existingValue, shiftedValue);
         
         if (existingValue != shiftedValue) {
             [self setTargetValueForKeypathWithNewValue:shiftedValue];
@@ -231,10 +255,14 @@
     
     if (targetValueThatMatchesLimit) {
         if ([_targetObject isKindOfClass:[UIView class]]) {
-            [UIView animateWithDuration:0.1f delay:0.0f options:UIViewAnimationOptionAllowAnimatedContent animations:^{
+            [UIView animateWithDuration:0.1f
+                                  delay:0.0f
+                                options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionBeginFromCurrentState
+                             animations:^{
                 _isAnimatingTargetObject = true;
                 [self setTargetValueForKeypathWithNewValue:targetValueThatMatchesLimit.floatValue];
-            } completion:^(BOOL finished) {
+            }
+                             completion:^(BOOL finished) {
                 _isAnimatingTargetObject = false;
             }];
         }
@@ -362,13 +390,22 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     
     NSValue *contentInsetValue = [object valueForKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
     UIEdgeInsets contentInsetEdgeInsets = contentInsetValue.UIEdgeInsetsValue;
+    NSLog(@"INSETT %@", NSStringFromUIEdgeInsets(contentInsetEdgeInsets));
+    return [DZScrollingInspector contentInsetValueForKey:key fromUIEdgeInsets:contentInsetEdgeInsets];
+}
+
++(CGFloat)contentInsetValueForKey:(NSString*)key fromUIEdgeInsets:(UIEdgeInsets)contentInsetEdgeInsets
+{
+    if (!key) {
+        [NSException raise:NSInvalidArgumentException format:@"Argument 'key' must be non-nil"];
+    }
     
     NSDictionary *contentInsetDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [NSNumber numberWithFloat:contentInsetEdgeInsets.top], @"top",
-                                             [NSNumber numberWithFloat:contentInsetEdgeInsets.bottom], @"bottom",
-                                             [NSNumber numberWithFloat:contentInsetEdgeInsets.left], @"left",
-                                             [NSNumber numberWithFloat:contentInsetEdgeInsets.right], @"right",
-                                             nil];
+                                            [NSNumber numberWithFloat:contentInsetEdgeInsets.top], @"top",
+                                            [NSNumber numberWithFloat:contentInsetEdgeInsets.bottom], @"bottom",
+                                            [NSNumber numberWithFloat:contentInsetEdgeInsets.left], @"left",
+                                            [NSNumber numberWithFloat:contentInsetEdgeInsets.right], @"right",
+                                            nil];
     
     NSNumber *insetNumber = [contentInsetDictionary objectForKey:key];
     

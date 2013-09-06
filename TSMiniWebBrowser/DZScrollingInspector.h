@@ -15,7 +15,7 @@
 #define DZScrollingInspector_CONTENT_OFFSET_KEYPATH @"contentOffset"
 #define DZScrollingInspector_CONTENT_INSET_KEYPATH @"contentInset"
 #define DZScrollingInspector_FRAME_KEYPATH @"frame"
-#define DZScrollingInspector_IS_DRAGGING_KEYPATH @"isDragging"
+#define DZScrollingInspector_PAN_STATE_KEYPATH @"pan.state"
 
 typedef enum {
     DZScrollDirectionNone,
