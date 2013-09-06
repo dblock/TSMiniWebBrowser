@@ -64,6 +64,7 @@ typedef enum {
 	UIColor *barTintColor;
     NSString *modalDismissButtonTitle;
     NSString *forcedTitleBarText;
+    BOOL _hideTopBarAndBottomBarOnScrolling;
     
     // State control
     UIBarStyle originalBarStyle;
@@ -89,6 +90,7 @@ typedef enum {
 @property (nonatomic, strong) NSString *currentURL;
 @property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForTopBar;
 @property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForBottomBar;
+@property (nonatomic, assign) BOOL hideTopBarAndBottomBarOnScrolling;
 
 // Public Methods
 - (id)initWithUrl:(NSURL*)url;

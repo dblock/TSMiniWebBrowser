@@ -22,8 +22,6 @@
     if (self = [super init])
     {
         // defaults
-        _scrollDirection = DZScrollDirectionNone;
-        _lastScrollDirectionThatWasntNone = DZScrollDirectionNone;
         _isSuspended = NO;
         _isAnimatingTargetObject = NO;
         
@@ -89,8 +87,8 @@
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
         offset = [DZScrollingInspector contentOffsetValueForKey:_offsetKeypath fromCGPoint:newValue.CGPointValue];
         NSLog(@"new offset %f", offset);
-        
-        offsetChanged = YES;
+        if (offset != _offset)
+            offsetChanged = YES;
     }
     
     
@@ -99,8 +97,8 @@
         NSLog(@"INSETT VALUE %@", newValue);
         inset = [DZScrollingInspector contentInsetValueForKey:_insetKeypath fromUIEdgeInsets:newValue.UIEdgeInsetsValue];
         NSLog(@"new inset %f", inset);
-        
-        insetChanged = YES;
+        if (inset != _inset)
+            insetChanged = YES;
     }
     
     if ([keyPath isEqual:DZScrollingInspector_PAN_STATE_KEYPATH]) {
@@ -133,19 +131,35 @@
         offset = _offset;
     }
     
-    if (insetChanged || offsetChanged) {
-    
-        [self assumeScrollDirection:offset andInset:inset];
-        
-        if (_scrollView.isDragging && !_isAnimatingTargetObject) {
-            [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
+    // reaction
+    if (!_isSuspended) {
+        if (insetChanged || offsetChanged) {
+            
+            if (_scrollView.isDragging && !_isAnimatingTargetObject) {
+                [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
+            }
+        }
+        else if (startedDragging || endedDragging) {
+            
+            BOOL scrollingBeyondBounds = NO;
+            if (_offset < 0 && -_offset < _inset) {
+                scrollingBeyondBounds = YES;
+            }
+            
+            if (endedDragging && ![self isLimitForCurrentInterfaceOrientationReached] && !scrollingBeyondBounds && !_isAnimatingTargetObject) {
+                [self animateTargetToReachLimitForCurrentDirection];
+            }
         }
     }
-    else if (startedDragging || endedDragging) {
-        
-        if (endedDragging && ![self isLimitForCurrentInterfaceOrientationReached] && !_isAnimatingTargetObject) {
-            [self animateTargetToReachLimitForCurrentDirection];
-        }
+    
+    
+    
+    // set stored values
+    if (offsetChanged) {
+        _offset = offset;
+    }
+    if (insetChanged) {
+        _inset = inset;
     }
     
     /*
@@ -164,29 +178,11 @@
     [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
 }
 
-- (void)assumeScrollDirection:(CGFloat)newOffset andInset:(CGFloat)newInset {
-    DZScrollDirection scrollDirection = DZScrollDirectionNone;
-    if (_offset < newOffset) {
-        scrollDirection = DZScrollDirectionUp;
-    }
-    else if (_offset > newOffset) {
-        scrollDirection = DZScrollDirectionDown;
-    }
-    
-    if (scrollDirection != DZScrollDirectionNone) {
-        _lastScrollDirectionThatWasntNone = scrollDirection;
-    }
-    
-    _scrollDirection = scrollDirection;
-}
-
 - (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
 {
     
-    NSLog(@"target %@, offset %f, inset %f", _targetObject, newOffset, newInset);
-    
-    
-    
+    NSLog(@"target %@, newOffset %f, newInset %f, oldOffset %f, oldInset %f", _targetObject, newOffset, newInset, _offset, _inset);
+        
     // calculate movement delta
     CGFloat delta = (newInset + newOffset) - (_inset + _offset);
     
@@ -224,32 +220,34 @@
             [self setTargetValueForKeypathWithNewValue:shiftedValue];
         }
     }
-
-
-    // set stored values
-    _offset = newOffset;
-    _inset = newInset;
 }
 
 - (void)animateTargetToReachLimitForCurrentDirection
 {
     NSNumber *targetValueThatMatchesLimit = nil;
-    switch (_lastScrollDirectionThatWasntNone) {
-        case DZScrollDirectionDown:
-            targetValueThatMatchesLimit = [NSNumber numberWithFloat:[self limitForCurrentInterfaceOrientation].max];
-            break;
-            
-        case DZScrollDirectionUp:
-            targetValueThatMatchesLimit = [NSNumber numberWithFloat:[self limitForCurrentInterfaceOrientation].min];
-            break;
-            
-        case DZScrollDirectionNone:
-            
-            break;
-            
-        default:
-            break;
+    DZScrollingInspectorLimit currentLimit = [self limitForCurrentInterfaceOrientation];
+    CGFloat currentTargetValue = [self getTargetCurrentValueForKeypath];
+    CGFloat lowerLimit = MIN(currentLimit.min, currentLimit.max);
+    CGFloat higherLimit = MAX(currentLimit.min, currentLimit.max);
+    CGFloat distance = fabsf(higherLimit - lowerLimit);
+    
+    CGFloat halfPassed = lowerLimit + distance/2;
+    
+    
+    
+    if (currentLimit.min < currentLimit.max) {
+        if (currentTargetValue < halfPassed)
+            targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.min];
+        else
+            targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.max];
     }
+    else {
+        if (currentTargetValue < halfPassed) 
+            targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.max];
+        else 
+            targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.min];
+    }
+    
     
     NSLog(@"Animation should take place to value: %f", targetValueThatMatchesLimit.floatValue);
     
@@ -292,7 +290,12 @@
     [DZScrollingInspector setFrameValue:newValue forKey:_targetFramePropertyKeyPath forObject:_targetObject];
 }
 
+-(void)dealloc
+{
+    [self unregisterForChangeNotification];
+}
 
+#pragma mark - Public methods
 
 -(void)suspend
 {
@@ -304,9 +307,9 @@
     _isSuspended = NO;
 }
 
--(void)dealloc
+-(void)resetTargetToMinLimit
 {
-    [self unregisterForChangeNotification];
+    [self setTargetValueForKeypathWithNewValue:[self limitForCurrentInterfaceOrientation].min];
 }
 
 #pragma mark - Static helpers

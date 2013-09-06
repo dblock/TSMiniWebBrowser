@@ -18,12 +18,6 @@
 #define DZScrollingInspector_PAN_STATE_KEYPATH @"pan.state"
 
 typedef enum {
-    DZScrollDirectionNone,
-    DZScrollDirectionUp,
-    DZScrollDirectionDown
-} DZScrollDirection;
-
-typedef enum {
     DZScrollingInspectorTargetPropertySetterOptionNumber,
     DZScrollingInspectorTargetPropertySetterOptionFrameOriginY
 } DZScrollingInspectorTargetPropertySetterOption;
@@ -58,8 +52,6 @@ typedef struct {
     CGFloat _offset;
     
     BOOL _isSuspended;
-    DZScrollDirection _scrollDirection;
-    DZScrollDirection _lastScrollDirectionThatWasntNone;
 }
 -(id)initWithObservedScrollView:(UIScrollView*)scrollView
                andOffsetKeyPath:(NSString*)offsetKeyPath
@@ -72,6 +64,8 @@ typedef struct {
 
 -(void)suspend;
 -(void)resume;
+
+-(void)resetTargetToMinLimit;
 
 DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLimitsMake(CGFloat portraitMin, CGFloat portraitMax, CGFloat landscapeMin, CGFloat landscapeMax);
 
