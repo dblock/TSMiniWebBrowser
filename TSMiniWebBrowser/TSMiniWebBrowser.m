@@ -564,7 +564,12 @@ enum actionSheetButtonIndex {
 }
 
 - (void)loadURL:(NSURL*)url {
-    [webView loadRequest: [NSURLRequest requestWithURL: url]];
+    if (!webView) {
+        urlToLoad = url;
+        [self initWebView];
+    } else {
+        [webView loadRequest: [NSURLRequest requestWithURL: url]];
+    }
 }
 
 #pragma mark - UIWebViewDelegate
