@@ -1,8 +1,12 @@
-## TSMiniWebBrowser - In-App web browser control for iOS apps
+## DZTSMiniWebBrowser - In-App web browser control for iOS apps
+### The original project by Toni Sala was improved by Denis Zamataev after the original author stopped accepting pull requests.
+#### So i pulled some fixes from the [original project](https://github.com/tonisalae/TSMiniWebBrowser) and added features like top and bottom bar hiding on scrolling (just as Chrome iOS browser does it).
 
-There are already some solutions to this problem out there but non of them offers this features. First, this solution solves the well-known **UIWebView bug** that causes erratic behavior when combining "zooming operations" and "landscape orientation". Moreover, the solution presented is **highly customizable**.
+The solution presented is **highly customizable**.
 
-More about me at [IndieDevStories.com](http://indiedevstories.com)
+![DZTSMiniWebBrowser_demo_animation](http://img34.imageshack.us/img34/695/guk.gif "Demo animation")
+
+## Screenshots
 
 [![Alt][screenshot1_thumb]][screenshot1]    [![Alt][screenshot2_thumb]][screenshot2]    [![Alt][screenshot3_thumb]][screenshot3]
 [screenshot1_thumb]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_01_thumb.png
@@ -57,15 +61,14 @@ If you prefer, you may **customize** the browser behavior. There is also a **sim
         [self.navigationController pushViewController:webBrowser animated:YES];
     }
 
-As usual, very easy to use ;)
-
 ## Adding TSMiniWebBrowser into your Xcode 4 project
 
 To add the TSMiniWebBrowser component to your project you simply need to drag & drop the entire “TSMiniWebBrowser” folder. There are only two files, apart from the icon images.
 
 This project uses **ARC**.
 
-## Licence
+ 
+## Original TSMiniWebBrowser Licence
 
 Copyright (c) 2012 Toni Sala
 
