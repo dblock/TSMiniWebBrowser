@@ -425,43 +425,30 @@ enum actionSheetButtonIndex {
     [webView stopLoading];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void)didReceiveMemoryWarning
 {
-    // Return YES for supported orientations
+    // Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+}
+
+#pragma mark - Support different interface orientations
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
-/* Fix for landscape + zooming webview bug.
- * If you experience perfomance problems on old devices ratation, comment out this method.
- */
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    CGFloat ratioAspect = webView.bounds.size.width/webView.bounds.size.height;
-    switch (toInterfaceOrientation) {
-        case UIInterfaceOrientationPortraitUpsideDown:
-        case UIInterfaceOrientationPortrait:
-            // Going to Portrait mode
-            for (UIScrollView *scroll in [webView subviews]) { //we get the scrollview
-                // Make sure it really is a scroll view and reset the zoom scale.
-                if ([scroll respondsToSelector:@selector(setZoomScale:)]){
-                    scroll.minimumZoomScale = scroll.minimumZoomScale/ratioAspect;
-                    scroll.maximumZoomScale = scroll.maximumZoomScale/ratioAspect;
-                    [scroll setZoomScale:(scroll.zoomScale/ratioAspect) animated:YES];
-                }
-            }
-            break;
-        default:
-            // Going to Landscape mode
-            for (UIScrollView *scroll in [webView subviews]) { //we get the scrollview
-                // Make sure it really is a scroll view and reset the zoom scale.
-                if ([scroll respondsToSelector:@selector(setZoomScale:)]){
-                    scroll.minimumZoomScale = scroll.minimumZoomScale *ratioAspect;
-                    scroll.maximumZoomScale = scroll.maximumZoomScale *ratioAspect;
-                    [scroll setZoomScale:(scroll.zoomScale*ratioAspect) animated:YES];
-                }
-            }
-            break;
-    }
+- (BOOL)shouldAutorotate {
     
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+    
+    return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {    
     [_scrollingInspectorForTopBar resetTargetToMinLimit];
     [_scrollingInspectorForBottomBar resetTargetToMinLimit];
 }
@@ -469,12 +456,6 @@ enum actionSheetButtonIndex {
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [self updateScrollingInspectorsLimits];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Action Sheet

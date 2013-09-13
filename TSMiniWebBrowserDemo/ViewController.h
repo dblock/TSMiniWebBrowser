@@ -27,6 +27,8 @@
 #import <UIKit/UIKit.h>
 #import "TSMiniWebBrowser.h"
 
+#define DEMO_URL @"https://developer.apple.com/library/ios/documentation/uikit/reference/UIScrollView_Class/Reference/UIScrollView.html"
+
 @interface ViewController : UIViewController <TSMiniWebBrowserDelegate> {
     
 }

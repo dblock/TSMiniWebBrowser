@@ -76,7 +76,7 @@
 }
 
 - (IBAction)openBrowserNavigationMode:(id)sender {
-    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
 //    webBrowser.showURLStringOnActionSheetTitle = YES;
 //    webBrowser.showPageTitleOnTitleBar = YES;
@@ -91,7 +91,7 @@
 }
 
 - (IBAction)openBrowserModalMode:(id)sender {
-    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
     webBrowser.mode = TSMiniWebBrowserModeModal;
     
@@ -104,7 +104,7 @@
 
 - (IBAction)openBrowserTabbarModeOne:(id)sender {
     
-    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
     webBrowser.mode = TSMiniWebBrowserModeTabBar;
     webBrowser.barStyle = UIBarStyleBlack;
@@ -122,7 +122,7 @@
 
 - (IBAction)openBrowserTabbarModeTwo:(id)sender {
     
-    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://habrahabr.ru/post/191934/"]];
+    TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
     webBrowser.mode = TSMiniWebBrowserModeTabBar;
     webBrowser.barStyle = UIBarStyleBlack;
