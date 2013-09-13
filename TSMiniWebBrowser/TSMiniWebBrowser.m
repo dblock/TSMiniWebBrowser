@@ -25,6 +25,7 @@
 //
 
 #import "TSMiniWebBrowser.h"
+#import "DZScrollingInspector.h"
 
 @implementation TSMiniWebBrowser
 
@@ -40,8 +41,11 @@
 @synthesize barTintColor;
 @synthesize domainLockList;
 @synthesize currentURL;
+@synthesize scrollingInspectorForTopBar = _scrollingInspectorForTopBar;
+@synthesize scrollingInspectorForBottomBar = _scrollingInspectorForBottomBar;
 
 #define kToolBarHeight  44
+#define kNavBarHeight  44
 #define kTabBarHeight   49
 
 enum actionSheetButtonIndex {
@@ -58,6 +62,24 @@ enum actionSheetButtonIndex {
     } else if(mode == TSMiniWebBrowserModeNavigation) {
         if(pageTitle) [[self navigationItem] setTitle:pageTitle];
     }
+}
+
+-(void)setHideTopBarAndBottomBarOnScrolling:(BOOL)hideTopBarAndBottomBarOnScrolling
+{
+    _hideTopBarAndBottomBarOnScrolling = hideTopBarAndBottomBarOnScrolling;
+    if (hideTopBarAndBottomBarOnScrolling) {
+        [_scrollingInspectorForTopBar suspend];
+        [_scrollingInspectorForBottomBar suspend];
+    }
+    else {
+        [_scrollingInspectorForTopBar resume];
+        [_scrollingInspectorForBottomBar resume];
+    }
+}
+
+-(BOOL)hideTopBarAndBottomBarOnScrolling
+{
+    return _hideTopBarAndBottomBarOnScrolling;
 }
 
 -(void) toggleBackForwardButtons {
@@ -93,6 +115,59 @@ enum actionSheetButtonIndex {
     }
 }
 
+-(void)updateScrollingInspectorsLimits
+{
+    UIView *topBar = [self topBarForCurrentMode];
+    UIView *bottomBar = [self bottomBarForCurrentMode];
+    [_scrollingInspectorForTopBar setLimits:DZScrollingInspectorTwoOrientationsLimitsMake(topBar.frame.origin.y,
+                                                                                          topBar.frame.origin.y-topBar.frame.size.height,
+                                                                                          topBar.frame.origin.y,
+                                                                                          topBar.frame.origin.y-topBar.frame.size.height)];
+    [_scrollingInspectorForBottomBar setLimits:DZScrollingInspectorTwoOrientationsLimitsMake(bottomBar.frame.origin.y,
+                                                                                             bottomBar.frame.origin.y+bottomBar.frame.size.height,
+                                                                                             bottomBar.frame.origin.y,
+                                                                                             bottomBar.frame.origin.y+bottomBar.frame.size.height)];
+}
+
+- (UIView*)topBarForCurrentMode
+{
+    UIView *topBar = nil;
+    switch (mode) {
+        case TSMiniWebBrowserModeNavigation:
+            topBar = self.navigationController.navigationBar;
+            break;
+        case TSMiniWebBrowserModeModal:
+            topBar = navigationBarModal;
+            break;
+            
+        case TSMiniWebBrowserModeTabBar:
+            topBar = toolBar;
+            break;
+        default:
+            break;
+    }
+    return topBar;
+}
+
+- (UIView*)bottomBarForCurrentMode
+{
+    UIView *bottomBar = nil;
+    switch (mode) {
+        case TSMiniWebBrowserModeNavigation:
+            bottomBar = toolBar;
+            break;
+        case TSMiniWebBrowserModeModal:
+            bottomBar = toolBar;
+            break;
+            
+        case TSMiniWebBrowserModeTabBar:
+            break;
+        default:
+            break;
+    }
+    return bottomBar;
+}
+
 //Added in the dealloc method to remove the webview delegate, because if you use this in a navigation controller
 //TSMiniWebBrowser can get deallocated while the page is still loading and the web view will call its delegate-- resulting in a crash
 -(void)dealloc
@@ -110,7 +185,7 @@ enum actionSheetButtonIndex {
     titleBar.leftBarButtonItem = buttonDone;
     
     CGFloat width = self.view.frame.size.width;
-    navigationBarModal = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
+    navigationBarModal = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, width, kNavBarHeight)];
     //navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     navigationBarModal.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     navigationBarModal.barStyle = barStyle;
@@ -182,25 +257,35 @@ enum actionSheetButtonIndex {
 
 -(void) initWebView {
     CGSize viewSize = self.view.frame.size;
-    if (mode == TSMiniWebBrowserModeModal) {
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, kToolBarHeight, viewSize.width, viewSize.height-kToolBarHeight*2)];
-    } else if(mode == TSMiniWebBrowserModeNavigation) {
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewSize.width, viewSize.height-kToolBarHeight)];
-    } else if(mode == TSMiniWebBrowserModeTabBar) {
-        self.view.backgroundColor = [UIColor redColor];
-        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, kToolBarHeight-1, viewSize.width, viewSize.height-kToolBarHeight+1)];
+
+    
+    CGRect webViewFrame = CGRectMake(0, 0, viewSize.width, viewSize.height);
+    UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(kNavBarHeight, 0, kToolBarHeight, 0);
+    UIEdgeInsets webViewScrollIndicatorsInsets = UIEdgeInsetsMake(kNavBarHeight, 0, 0, 0);
+    
+    if(mode == TSMiniWebBrowserModeNavigation) {
+        if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
+            // On iOS7 the webview can be seen through the navigationbar
+            // TODO: perform a test on iOS 7
+        }
+        else {
+            // On iOS below 7 we should make webView be under the navigationbar
+            CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
+            webViewFrame = CGRectMake(0, - navBarHeight, viewSize.width, viewSize.height+navBarHeight);
+            webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, kToolBarHeight, 0);
+        }
     }
+    
+    webView = [[UIWebView alloc] initWithFrame:webViewFrame];
+    webView.scrollView.contentInset = webViewContentInset;
+    webView.scrollView.scrollIndicatorInsets = webViewScrollIndicatorsInsets;
+    
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:webView];
     
     webView.scalesPageToFit = YES;
     
     webView.delegate = self;
-	
-	if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
-		// On iOS7 the webview can be seen through the navigationbar
-		webView.scrollView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-	}
     
     // Load the URL in the webView
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:urlToLoad];
@@ -226,6 +311,7 @@ enum actionSheetButtonIndex {
         barStyle = UIBarStyleDefault;
         statusBarStyle = UIStatusBarStyleBlackOpaque;
 		barTintColor = nil;
+        _hideTopBarAndBottomBarOnScrolling = YES;
     }
     
     return self;
@@ -254,15 +340,19 @@ enum actionSheetButtonIndex {
     
     originalStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
     
-    // Init tool bar
-    [self initToolBar];
-    
     // Init web view
     [self initWebView];
+    
+    // Init tool bar
+    [self initToolBar];
     
     // Init title bar if presented modally
     if (mode == TSMiniWebBrowserModeModal) {
         [self initTitleBar];
+    }
+    
+    if (_hideTopBarAndBottomBarOnScrolling) {
+    [self performSelector:@selector(initScrollingInspectors) withObject:self afterDelay:0.1f];
     }
     
     // Status bar style
@@ -275,6 +365,30 @@ enum actionSheetButtonIndex {
         [self setTitleBarText:forcedTitleBarText];
     }
     
+}
+
+- (void)initScrollingInspectors
+{
+    UIView *topBar = [self topBarForCurrentMode];
+    UIView *bottomBar = [self bottomBarForCurrentMode];
+    
+    if (topBar) {
+        _scrollingInspectorForTopBar = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
+                                                                               andOffsetKeyPath:@"y"
+                                                                                andInsetKeypath:@"top"
+                                                                                andTargetObject:topBar
+                                                                  andTargetFramePropertyKeyPath:@"origin.y"
+                                                                                      andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(topBar.frame.origin.y, topBar.frame.origin.y-topBar.frame.size.height, topBar.frame.origin.y, topBar.frame.origin.y-topBar.frame.size.height)];
+    }
+    
+    if (bottomBar) {
+        _scrollingInspectorForBottomBar = [[DZScrollingInspector alloc] initWithObservedScrollView:webView.scrollView
+                                                                                  andOffsetKeyPath:@"y"
+                                                                                   andInsetKeypath:@"top"
+                                                                                   andTargetObject:bottomBar
+                                                                     andTargetFramePropertyKeyPath:@"origin.y"
+                                                                                         andLimits:DZScrollingInspectorTwoOrientationsLimitsMake(bottomBar.frame.origin.y, bottomBar.frame.origin.y+bottomBar.frame.size.height, bottomBar.frame.origin.y, bottomBar.frame.origin.y+bottomBar.frame.size.height)];
+    }
 }
 
 - (void)viewDidUnload
@@ -311,48 +425,37 @@ enum actionSheetButtonIndex {
     [webView stopLoading];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-}
-
-/* Fix for landscape + zooming webview bug.
- * If you experience perfomance problems on old devices ratation, comment out this method.
- */
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    CGFloat ratioAspect = webView.bounds.size.width/webView.bounds.size.height;
-    switch (toInterfaceOrientation) {
-        case UIInterfaceOrientationPortraitUpsideDown:
-        case UIInterfaceOrientationPortrait:
-            // Going to Portrait mode
-            for (UIScrollView *scroll in [webView subviews]) { //we get the scrollview
-                // Make sure it really is a scroll view and reset the zoom scale.
-                if ([scroll respondsToSelector:@selector(setZoomScale:)]){
-                    scroll.minimumZoomScale = scroll.minimumZoomScale/ratioAspect;
-                    scroll.maximumZoomScale = scroll.maximumZoomScale/ratioAspect;
-                    [scroll setZoomScale:(scroll.zoomScale/ratioAspect) animated:YES];
-                }
-            }
-            break;
-        default:
-            // Going to Landscape mode
-            for (UIScrollView *scroll in [webView subviews]) { //we get the scrollview
-                // Make sure it really is a scroll view and reset the zoom scale.
-                if ([scroll respondsToSelector:@selector(setZoomScale:)]){
-                    scroll.minimumZoomScale = scroll.minimumZoomScale *ratioAspect;
-                    scroll.maximumZoomScale = scroll.maximumZoomScale *ratioAspect;
-                    [scroll setZoomScale:(scroll.zoomScale*ratioAspect) animated:YES];
-                }
-            }
-            break;
-    }
-}
-
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark - Support different interface orientations
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+
+- (BOOL)shouldAutorotate {
+    
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+    
+    return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {    
+    [_scrollingInspectorForTopBar resetTargetToMinLimit];
+    [_scrollingInspectorForBottomBar resetTargetToMinLimit];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self updateScrollingInspectorsLimits];
 }
 
 #pragma mark - Action Sheet
