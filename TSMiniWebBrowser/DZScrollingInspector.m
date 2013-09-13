@@ -126,16 +126,19 @@
     
     if (offsetChanged) {
         inset = _inset;
+        DZScrollingInspectorLog(@"new offset: %f", offset);
     }
     if (insetChanged) {
         offset = _offset;
+        DZScrollingInspectorLog(@"new inset: %f", inset);
     }
     
     // reaction
     if (!_isSuspended) {
         if (insetChanged || offsetChanged) {
             
-            if (_scrollView.isDragging && !_isAnimatingTargetObject) {
+            if ((_scrollView.isDragging && !_isAnimatingTargetObject) ||
+                (- offset < _inset && !_isAnimatingTargetObject)) {
                 [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
             }
         }
@@ -173,9 +176,10 @@
      */
 }
 
-- (void)unregisterForChangeNotification {
+- (void)unregisterAsObserver {
     [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_OFFSET_KEYPATH];
     [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
+    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_PAN_STATE_KEYPATH];
 }
 
 - (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
@@ -304,7 +308,7 @@
 
 -(void)dealloc
 {
-    [self unregisterForChangeNotification];
+    [self unregisterAsObserver];
 }
 
 #pragma mark - Public methods

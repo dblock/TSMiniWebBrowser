@@ -8,6 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+#define DZScrollingInspector_LOGGING_ENABLED
+
+#ifdef DZScrollingInspector_LOGGING_ENABLED
+#	define DZScrollingInspectorLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#else
+#	define DZScrollingInspectorLog(...)
+#endif
+
 /* 
  the used UIView and UIScrollView properties keypaths defined here
  in order to accomodate future possible renaming of these properties
