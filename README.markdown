@@ -4,9 +4,7 @@ In-app web browser control for iOS apps.
 
 [![Build Status](https://travis-ci.org/dblock/TSMiniWebBrowser.svg)](https://travis-ci.org/dblock/TSMiniWebBrowser)
 
-This is the maintained fork of [TSMiniWebBrowser](https://github.com/tonisalae/TSMiniWebBrowser). It's also the version on CocaPods. It contains all the improvements from [DZTSMiniWebBrowser](https://github.com/DZamataev/DZTSMiniWebBrowser). Thanks to Toni Sala and Denis Zamataev for all the hard work. See [CHANGELOG](CHANGELOG.md) for details.
-
-![Demp](Screenshots/demo.gif "Demo animation")
+![Demo](Screenshots/demo.gif "Demo animation")
 
 ## Screenshots
 
@@ -22,12 +20,12 @@ This is the maintained fork of [TSMiniWebBrowser](https://github.com/tonisalae/T
 
 TSMiniWebBrowser offers the following **features**:
 
-* Back and forward buttons
-* Reload button (*optional*)
-* Activity indicator while page is loading
-* Action button to open the current page in Safari (*optional*)
-* Displays the page title at the navigation bar (*optional*)
-* Displays the current URL at the top of the “Open in Safari” action sheet (*optional*)
+* Back and forward buttons.
+* Reload button (*optional*).
+* Activity indicator while page is loading.
+* Action button to open the current page in Safari (*optional*).
+* Displays the page title at the navigation bar (*optional*).
+* Displays the current URL at the top of the “Open in Safari” action sheet (*optional*).
 * Customizable bar style: default, black, black translucent.
 
 TSMiniWebBrowser **supports 3 presentation modes**:
@@ -64,6 +62,10 @@ if (webBrowser.mode == TSMiniWebBrowserModeModal) {
     [self.navigationController pushViewController:webBrowser animated:YES];
 }
 ```
+
+## History
+
+This is the maintained fork of [TSMiniWebBrowser](https://github.com/tonisalae/TSMiniWebBrowser), available via CocoaPods. It contains all the improvements from [DZTSMiniWebBrowser](https://github.com/DZamataev/DZTSMiniWebBrowser). Thanks to Toni Sala and Denis Zamataev for all the hard work. See [CHANGELOG](CHANGELOG.md) for details.
 
 ## License
 
