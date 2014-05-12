@@ -14,6 +14,7 @@
 		3C26E12E19211C1E007ECC04 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C26E12C19211C1E007ECC04 /* InfoPlist.strings */; };
 		3C26E13819211EE8007ECC04 /* ViewControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C26E13719211EE8007ECC04 /* ViewControllerTests.m */; };
 		3C4EF40719214427003FF562 /* TSMiniWebBrowserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4EF40619214427003FF562 /* TSMiniWebBrowserTests.m */; };
+		3C4EF40B19216C32003FF562 /* Specta+Sleep.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4EF40A19216C32003FF562 /* Specta+Sleep.m */; };
 		54226ED8130B464AB0B1B23D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5F7EA42AA0D41A28BC9AA50 /* libPods.a */; };
 		6F69CDB514C6339C00BB6C57 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F69CDB414C6339C00BB6C57 /* UIKit.framework */; };
 		6F69CDB714C6339C00BB6C57 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F69CDB614C6339C00BB6C57 /* Foundation.framework */; };
@@ -51,6 +52,8 @@
 		3C26E13119211C1E007ECC04 /* TSMiniWebBrowserDemoTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TSMiniWebBrowserDemoTests-Prefix.pch"; sourceTree = "<group>"; };
 		3C26E13719211EE8007ECC04 /* ViewControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTests.m; sourceTree = "<group>"; };
 		3C4EF40619214427003FF562 /* TSMiniWebBrowserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMiniWebBrowserTests.m; sourceTree = "<group>"; };
+		3C4EF40919216C32003FF562 /* Specta+Sleep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Specta+Sleep.h"; sourceTree = "<group>"; };
+		3C4EF40A19216C32003FF562 /* Specta+Sleep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Specta+Sleep.m"; sourceTree = "<group>"; };
 		6F69CDB014C6339C00BB6C57 /* TSMiniWebBrowserDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSMiniWebBrowserDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F69CDB414C6339C00BB6C57 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		6F69CDB614C6339C00BB6C57 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -105,6 +108,7 @@
 		3C26E12919211C1E007ECC04 /* TSMiniWebBrowserDemoTests */ = {
 			isa = PBXGroup;
 			children = (
+				3C4EF40819216C1E003FF562 /* Extensions */,
 				3C26E13719211EE8007ECC04 /* ViewControllerTests.m */,
 				3C26E12A19211C1E007ECC04 /* Supporting Files */,
 				3C4EF40619214427003FF562 /* TSMiniWebBrowserTests.m */,
@@ -120,6 +124,15 @@
 				3C26E13119211C1E007ECC04 /* TSMiniWebBrowserDemoTests-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3C4EF40819216C1E003FF562 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				3C4EF40919216C32003FF562 /* Specta+Sleep.h */,
+				3C4EF40A19216C32003FF562 /* Specta+Sleep.m */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		6F69CDA514C6339C00BB6C57 = {
@@ -364,6 +377,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C26E13819211EE8007ECC04 /* ViewControllerTests.m in Sources */,
+				3C4EF40B19216C32003FF562 /* Specta+Sleep.m in Sources */,
 				3C4EF40719214427003FF562 /* TSMiniWebBrowserTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
