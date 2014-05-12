@@ -5,8 +5,8 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.summary      = 'An in-app web browser control for iOS apps.'
   s.homepage     = 'https://github.com/dblock/TSMiniWebBrowser'
-  s.author       = { 'Toni Sala' => 'tonisalae@gmail.com' }
-  s.source       = { :git => 'https://github.com/neoneye/TSMiniWebBrowser.git', :tag => 'version_1.0.1' }
+  s.author       = { 'Toni Sala' => 'tonisalae@gmail.com', 'Denis Zamataev' => 'denis.zamataev@gmail.com' }
+  s.source       = { :git => 'https://github.com/dblock/TSMiniWebBrowser.git', :tag => "v#{s.version}" }
   s.source_files = 'TSMiniWebBrowser/*.{h,m}'
   s.framework    = 'QuartzCore'
   s.requires_arc = true
