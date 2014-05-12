@@ -72,7 +72,6 @@
     UIViewController *fooController = [[UIViewController alloc] init];
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
     
-    
     [tabBarController addChildViewController:webBrowser];
     [tabBarController addChildViewController:fooController];
     
