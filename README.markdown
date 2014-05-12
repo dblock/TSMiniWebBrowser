@@ -1,20 +1,18 @@
-## DZTSMiniWebBrowser - In-App web browser control for iOS apps
-### The original project by Toni Sala was improved by Denis Zamataev after the original author stopped accepting pull requests.
-#### So i pulled some fixes from the [original project](https://github.com/tonisalae/TSMiniWebBrowser) and added features like top and bottom bar hiding on scrolling (just as Chrome iOS browser does it).
+## TSMiniWebBrowser - In-app web browser control for iOS apps
 
-The solution presented is **highly customizable**.
+This is the maintained fork of [TSMiniWebBrowser](https://github.com/tonisalae/TSMiniWebBrowser). It's also the version on CocaPods. It contains all the improvements from [DZTSMiniWebBrowser](https://github.com/DZamataev/DZTSMiniWebBrowser). Thanks to Toni Sala and Denis Zamataev for all the hard work. See [CHANGELOG](CHANGELOG.md) for details.
 
-![DZTSMiniWebBrowser_demo_animation](http://img34.imageshack.us/img34/695/guk.gif "Demo animation")
+![Demp](Screenshots/demo.gif "Demo animation")
 
 ## Screenshots
 
 [![Alt][screenshot1_thumb]][screenshot1]    [![Alt][screenshot2_thumb]][screenshot2]    [![Alt][screenshot3_thumb]][screenshot3]
-[screenshot1_thumb]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_01_thumb.png
-[screenshot1]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_01.png
-[screenshot2_thumb]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_02_thumb.png
-[screenshot2]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_02.png
-[screenshot3_thumb]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_03_thumb.png
-[screenshot3]: http://dl.dropbox.com/u/7604222/GitHub/TSMiniWebBrowser/shot_03.png
+[screenshot1_thumb]: Screenshots/shot_01_thumb.png
+[screenshot1]: Screenshots/shot_01.png
+[screenshot2_thumb]: Screenshots/shot_02_thumb.png
+[screenshot2]: Screenshots/shot_02.png
+[screenshot3_thumb]: Screenshots/shot_03_thumb.png
+[screenshot3]: Screenshots/shot_03.png
 
 ## Features
 
@@ -28,9 +26,7 @@ TSMiniWebBrowser offers the following **features**:
 * Displays the current URL at the top of the “Open in Safari” action sheet (*optional*)
 * Customizable bar style: default, black, black translucent.
 
-As you can see, there are some items that are “optional”. That means that you can configure the browser to display or not those items, depending on your app needs.
-
-Moreover, TSMiniWebBrowser **supports 3 presentation modes**:
+TSMiniWebBrowser **supports 3 presentation modes**:
 
 * **Navigation controller mode**. Using this mode you can push the browser to your navigation controller.
 * **Modal mode**. Using this mode you can present the browser modally. A title bar with a dismiss button will be automatically added.
@@ -38,60 +34,33 @@ Moreover, TSMiniWebBrowser **supports 3 presentation modes**:
 
 ## Usage
 
-If you are OK with the **TSMiniWebBrowser defaults**, you can simply use this snippet to create and display the browser:
+Create and display the browser with defaults:
 
-	TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
-	[self.navigationController pushViewController:webBrowser animated:YES];
+```objc
+TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+[self.navigationController pushViewController:webBrowser animated:YES];
+```
 
-If you prefer, you may **customize** the browser behavior. There is also a **simple Demo app** within the project. To test the tab bar mode go to the `application: didFinishLaunchingWithOptions:` method in `AppDelegate.m` and set the `BOOL wantTabBarDemo = NO;` value to `YES`.
+Try the [TSMiniWebBrowserDemo](TSMiniWebBrowserDemo) application. To test the tab bar mode go to the `application: didFinishLaunchingWithOptions:` method in `AppDelegate.m` and set the `BOOL wantTabBarDemo = NO;` value to `YES`.
 
-	TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
-    webBrowser.showURLStringOnActionSheetTitle = YES;
-    webBrowser.showPageTitleOnTitleBar = YES;
-    webBrowser.showActionButton = YES;
-    webBrowser.showReloadButton = YES;
-    webBrowser.mode = TSMiniWebBrowserModeNavigation;
+```objc
+TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+webBrowser.showURLStringOnActionSheetTitle = YES;
+webBrowser.showPageTitleOnTitleBar = YES;
+webBrowser.showActionButton = YES;
+webBrowser.showReloadButton = YES;
+webBrowser.mode = TSMiniWebBrowserModeNavigation;
 
-    webBrowser.barStyle = UIBarStyleBlack;
+webBrowser.barStyle = UIBarStyleBlack;
 
-    if (webBrowser.mode == TSMiniWebBrowserModeModal) {
-        webBrowser.modalDismissButtonTitle = @"Home";
-        [self presentModalViewController:webBrowser animated:YES];
-    } else if(webBrowser.mode == TSMiniWebBrowserModeNavigation) {
-        [self.navigationController pushViewController:webBrowser animated:YES];
-    }
+if (webBrowser.mode == TSMiniWebBrowserModeModal) {
+    webBrowser.modalDismissButtonTitle = @"Home";
+    [self presentModalViewController:webBrowser animated:YES];
+} else if(webBrowser.mode == TSMiniWebBrowserModeNavigation) {
+    [self.navigationController pushViewController:webBrowser animated:YES];
+}
+```
 
-## Adding TSMiniWebBrowser into your Xcode 4 project
+## License
 
-To add the TSMiniWebBrowser component to your project you simply need to drag & drop the entire “TSMiniWebBrowser” folder. There are only two files, apart from the icon images.
-
-This project uses **ARC**.
-
- 
-## Original TSMiniWebBrowser Licence
-
-Copyright (c) 2012 Toni Sala
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
----------------
-
-[![follow button](http://dzamataev.github.io/images/twitter_follow.png)](https://twitter.com/DZamataev)
-
-[![endorse](https://api.coderwall.com/dzamataev/endorsecount.png)](https://coderwall.com/dzamataev)
+MIT License, see [LICENSE](LICENSE) for details.

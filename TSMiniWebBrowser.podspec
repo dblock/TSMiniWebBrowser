@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name         = 'TSMiniWebBrowser'
-  s.version      = '1.0.1'
+  s.version      = '1.1'
   s.platform     = :ios
   s.license      = 'MIT'
   s.summary      = 'An in-app web browser control for iOS apps.'
-  s.homepage     = 'https://github.com/tonisalae/TSMiniWebBrowser'
+  s.homepage     = 'https://github.com/dblock/TSMiniWebBrowser'
   s.author       = { 'Toni Sala' => 'tonisalae@gmail.com' }
   s.source       = { :git => 'https://github.com/neoneye/TSMiniWebBrowser.git', :tag => 'version_1.0.1' }
   s.source_files = 'TSMiniWebBrowser/*.{h,m}'
