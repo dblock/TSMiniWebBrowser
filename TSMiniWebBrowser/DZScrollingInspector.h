@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define DZScrollingInspector_LOGGING_ENABLED
-
 #ifdef DZScrollingInspector_LOGGING_ENABLED
 #	define DZScrollingInspectorLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
@@ -41,8 +39,6 @@ typedef struct {
     DZScrollingInspectorLimit landscapeLimit;
 } DZScrollingInspectorTwoOrientationsLimits;
 
-
-
 @interface DZScrollingInspector : NSObject
 {
     UIScrollView *_scrollView;
@@ -62,6 +58,7 @@ typedef struct {
     
     BOOL _isSuspended;
 }
+
 -(id)initWithObservedScrollView:(UIScrollView*)scrollView
                andOffsetKeyPath:(NSString*)offsetKeyPath
                 andInsetKeypath:(NSString*)insetKeyPath
