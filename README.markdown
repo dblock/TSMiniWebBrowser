@@ -1,4 +1,8 @@
-## TSMiniWebBrowser - In-app web browser control for iOS apps
+## TSMiniWebBrowser
+
+In-app web browser control for iOS apps.
+
+[![Build Status](https://travis-ci.org/dblock/TSMiniWebBrowser.svg)](https://travis-ci.org/dblock/TSMiniWebBrowser)
 
 This is the maintained fork of [TSMiniWebBrowser](https://github.com/tonisalae/TSMiniWebBrowser). It's also the version on CocaPods. It contains all the improvements from [DZTSMiniWebBrowser](https://github.com/DZamataev/DZTSMiniWebBrowser). Thanks to Toni Sala and Denis Zamataev for all the hard work. See [CHANGELOG](CHANGELOG.md) for details.
 
