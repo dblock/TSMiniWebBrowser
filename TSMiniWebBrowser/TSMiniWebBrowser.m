@@ -35,6 +35,7 @@
 @synthesize showPageTitleOnTitleBar;
 @synthesize showReloadButton;
 @synthesize showActionButton;
+@synthesize showToolBar;
 @synthesize barStyle;
 @synthesize statusBarStyle;
 @synthesize modalDismissButtonTitle;
@@ -43,10 +44,12 @@
 @synthesize currentURL;
 @synthesize scrollingInspectorForTopBar = _scrollingInspectorForTopBar;
 @synthesize scrollingInspectorForBottomBar = _scrollingInspectorForBottomBar;
+@synthesize backgroundColor;
+@synthesize opaque;
 
-#define kToolBarHeight  44
-#define kNavBarHeight  44
-#define kTabBarHeight   49
+#define kToolBarHeight 44
+#define kNavBarHeight 44
+#define kTabBarHeight 49
 
 enum actionSheetButtonIndex {
 	kSafariButtonIndex,
@@ -77,12 +80,11 @@ enum actionSheetButtonIndex {
     }
 }
 
--(BOOL)hideTopBarAndBottomBarOnScrolling
-{
+-(BOOL)hideTopBarAndBottomBarOnScrolling {
     return _hideTopBarAndBottomBarOnScrolling;
 }
 
--(void) toggleBackForwardButtons {
+-(void)toggleBackForwardButtons {
     buttonGoBack.enabled = webView.canGoBack;
     buttonGoForward.enabled = webView.canGoForward;
 }
@@ -99,7 +101,7 @@ enum actionSheetButtonIndex {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
--(void) dismissController {
+-(void)dismissController {
     if ( webView.loading ) {
         [webView stopLoading];
     }
@@ -129,8 +131,7 @@ enum actionSheetButtonIndex {
                                                                                              bottomBar.frame.origin.y+bottomBar.frame.size.height)];
 }
 
-- (UIView*)topBarForCurrentMode
-{
+- (UIView*)topBarForCurrentMode {
     UIView *topBar = nil;
     switch (mode) {
         case TSMiniWebBrowserModeNavigation:
@@ -139,7 +140,6 @@ enum actionSheetButtonIndex {
         case TSMiniWebBrowserModeModal:
             topBar = navigationBarModal;
             break;
-            
         case TSMiniWebBrowserModeTabBar:
             topBar = toolBar;
             break;
@@ -149,8 +149,7 @@ enum actionSheetButtonIndex {
     return topBar;
 }
 
-- (UIView*)bottomBarForCurrentMode
-{
+- (UIView*)bottomBarForCurrentMode {
     UIView *bottomBar = nil;
     switch (mode) {
         case TSMiniWebBrowserModeNavigation:
@@ -159,7 +158,6 @@ enum actionSheetButtonIndex {
         case TSMiniWebBrowserModeModal:
             bottomBar = toolBar;
             break;
-            
         case TSMiniWebBrowserModeTabBar:
             break;
         default:
@@ -168,17 +166,16 @@ enum actionSheetButtonIndex {
     return bottomBar;
 }
 
-//Added in the dealloc method to remove the webview delegate, because if you use this in a navigation controller
-//TSMiniWebBrowser can get deallocated while the page is still loading and the web view will call its delegate-- resulting in a crash
--(void)dealloc
-{
+// Remove the webview delegate, because if you use this in a navigation controller, TSMiniWebBrowser can get deallocated while
+// the page is still loading and the web view will call its delegate.
+-(void)dealloc {
     [webView setDelegate:nil];
 }
 
 #pragma mark - Init
 
 // This method is only used in modal mode
--(void) initTitleBar {
+-(void)initTitleBar {
     UIBarButtonItem *buttonDone = [[UIBarButtonItem alloc] initWithTitle:modalDismissButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(dismissController)];
     
     UINavigationItem *titleBar = [[UINavigationItem alloc] initWithTitle:@""];
@@ -194,7 +191,7 @@ enum actionSheetButtonIndex {
     [self.view addSubview:navigationBarModal];
 }
 
--(void) initToolBar {
+-(void)initToolBar {
     if (mode == TSMiniWebBrowserModeNavigation) {
         self.navigationController.navigationBar.barStyle = barStyle;
     }
@@ -203,7 +200,7 @@ enum actionSheetButtonIndex {
     if (mode == TSMiniWebBrowserModeTabBar) {
         toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, -1, viewSize.width, kToolBarHeight)];
     } else {
-        toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, viewSize.height-kToolBarHeight, viewSize.width, kToolBarHeight)];
+        toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, viewSize.height - kToolBarHeight, viewSize.width, kToolBarHeight)];
     }
     
     toolBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
@@ -255,12 +252,11 @@ enum actionSheetButtonIndex {
 	[toolBar setTintColor:barTintColor];
 }
 
--(void) initWebView {
+-(void)initWebView {
     CGSize viewSize = self.view.frame.size;
-
     
     CGRect webViewFrame = CGRectMake(0, 0, viewSize.width, viewSize.height);
-    UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(kNavBarHeight, 0, kToolBarHeight, 0);
+    UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(kNavBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
     UIEdgeInsets webViewScrollIndicatorsInsets = UIEdgeInsetsMake(kNavBarHeight, 0, 0, 0);
     
     if(mode == TSMiniWebBrowserModeNavigation) {
@@ -272,7 +268,7 @@ enum actionSheetButtonIndex {
             // On iOS below 7 we should make webView be under the navigationbar
             CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
             webViewFrame = CGRectMake(0, - navBarHeight, viewSize.width, viewSize.height+navBarHeight);
-            webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, kToolBarHeight, 0);
+            webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
         }
     }
     
@@ -287,6 +283,12 @@ enum actionSheetButtonIndex {
     
     webView.delegate = self;
     
+    if (backgroundColor) {
+        webView.backgroundColor = backgroundColor;
+    }
+
+    webView.opaque = opaque;
+    
     // Load the URL in the webView
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:urlToLoad];
     [webView loadRequest:requestObj];
@@ -296,31 +298,32 @@ enum actionSheetButtonIndex {
 
 - (id)initWithUrl:(NSURL*)url {
     self = [self init];
-    if(self)
-    {
-        urlToLoad = url;
-        
-        // Defaults
-        mode = TSMiniWebBrowserModeNavigation;
-        showURLStringOnActionSheetTitle = YES;
-        showPageTitleOnTitleBar = YES;
-        showReloadButton = YES;
-        showActionButton = YES;
-        modalDismissButtonTitle = NSLocalizedString(@"Done", nil);
-        forcedTitleBarText = nil;
-        barStyle = UIBarStyleDefault;
-        statusBarStyle = UIStatusBarStyleBlackOpaque;
-		barTintColor = nil;
-        _hideTopBarAndBottomBarOnScrolling = YES;
-    }
+    if (!self) { return nil; };
+
+    urlToLoad = url;
     
+    // Defaults
+    mode = TSMiniWebBrowserModeNavigation;
+    showURLStringOnActionSheetTitle = YES;
+    showPageTitleOnTitleBar = YES;
+    showReloadButton = YES;
+    showActionButton = YES;
+    showToolBar = YES;
+    modalDismissButtonTitle = NSLocalizedString(@"Done", nil);
+    forcedTitleBarText = nil;
+    barStyle = UIBarStyleDefault;
+    statusBarStyle = UIStatusBarStyleBlackOpaque;
+    barTintColor = nil;
+    opaque = YES;
+    backgroundColor = nil;
+    _hideTopBarAndBottomBarOnScrolling = YES;
     return self;
 }
 
 #pragma mark - View lifecycle
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     // Main view frame.
@@ -344,7 +347,9 @@ enum actionSheetButtonIndex {
     [self initWebView];
     
     // Init tool bar
-    [self initToolBar];
+    if (self.showToolBar) {
+        [self initToolBar];
+    }
     
     // Init title bar if presented modally
     if (mode == TSMiniWebBrowserModeModal) {
@@ -352,7 +357,7 @@ enum actionSheetButtonIndex {
     }
     
     if (_hideTopBarAndBottomBarOnScrolling) {
-    [self performSelector:@selector(initScrollingInspectors) withObject:self afterDelay:0.1f];
+        [self performSelector:@selector(initScrollingInspectors) withObject:self afterDelay:0.1f];
     }
     
     // Status bar style
@@ -367,8 +372,7 @@ enum actionSheetButtonIndex {
     
 }
 
-- (void)initScrollingInspectors
-{
+- (void)initScrollingInspectors {
     UIView *topBar = [self topBarForCurrentMode];
     UIView *bottomBar = [self bottomBarForCurrentMode];
     
@@ -391,17 +395,9 @@ enum actionSheetButtonIndex {
     }
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-}
-
-- (void) viewWillAppear:(BOOL)animated
-{
-	for (id subview in self.view.subviews)
-	{
-		if ([subview isKindOfClass: [UIWebView class]])
-		{
+- (void) viewWillAppear:(BOOL)animated {
+	for (id subview in self.view.subviews) {
+		if ([subview isKindOfClass: [UIWebView class]]) {
 			UIWebView *sv = subview;
 			[sv.scrollView setScrollsToTop:NO];
 		}
@@ -425,26 +421,17 @@ enum actionSheetButtonIndex {
     [webView stopLoading];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Support different interface orientations
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
 - (BOOL)shouldAutorotate {
-    
     return YES;
 }
 
 - (NSUInteger)supportedInterfaceOrientations {
-    
     return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
@@ -453,8 +440,7 @@ enum actionSheetButtonIndex {
     [_scrollingInspectorForBottomBar resetTargetToMinLimit];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self updateScrollingInspectorsLimits];
 }
 
@@ -578,56 +564,35 @@ enum actionSheetButtonIndex {
     if ([[request.URL absoluteString] hasPrefix:@"sms:"]) {
         [[UIApplication sharedApplication] openURL:request.URL];
         return NO;
-    }
-	
-	else
-	{
+    } else {
 		if ([[request.URL absoluteString] hasPrefix:@"http://www.youtube.com/v/"] ||
 			[[request.URL absoluteString] hasPrefix:@"http://itunes.apple.com/"] ||
 			[[request.URL absoluteString] hasPrefix:@"http://phobos.apple.com/"]) {
 			[[UIApplication sharedApplication] openURL:request.URL];
 			return NO;
-		}
-		
-		else
-		{
-            if (domainLockList == nil || [domainLockList isEqualToString:@""])
-            {
-				if (navigationType == UIWebViewNavigationTypeLinkClicked)
-				{
+		} else {
+            if (domainLockList == nil || [domainLockList isEqualToString:@""]) {
+				if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 					currentURL = request.URL.absoluteString;
 				}
-                
                 return YES;
-            }
-            
-            else
-            {
+            } else {
                 NSArray *domainList = [domainLockList componentsSeparatedByString:@","];
                 BOOL sendToSafari = YES;
                 
-                for (int x = 0; x < domainList.count; x++)
-                {
-                    if ([[request.URL absoluteString] hasPrefix:(NSString *)[domainList objectAtIndex:x]] == YES)
-                    {
+                for (int x = 0; x < domainList.count; x++) {
+                    if ([[request.URL absoluteString] hasPrefix:(NSString *)[domainList objectAtIndex:x]] == YES) {
                         sendToSafari = NO;
                     }
                 }
 				
-                if (sendToSafari == YES)
-                {
+                if (sendToSafari == YES) {
                     [[UIApplication sharedApplication] openURL:[request URL]];
-                    
                     return NO;
-                }
-                
-                else
-                {
-					if (navigationType == UIWebViewNavigationTypeLinkClicked)
-					{
+                } else {
+					if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 						currentURL = request.URL.absoluteString;
 					}
-                    
                     return YES;
                 }
             }
@@ -669,6 +634,16 @@ enum actionSheetButtonIndex {
                                           cancelButtonTitle:nil
                                           otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
 	[alert show];
+}
+
+- (void)setBackgroundColor:(UIColor *)color {
+    backgroundColor = color;
+    webView.backgroundColor = color;
+}
+
+- (void)setOpaque:(BOOL)value {
+    opaque = value;
+    webView.opaque = value;
 }
 
 @end

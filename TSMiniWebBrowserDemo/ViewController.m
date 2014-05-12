@@ -58,6 +58,8 @@
     webBrowser.barStyle = UIBarStyleBlack;
     
     webBrowser.modalDismissButtonTitle = @"Home";
+   
+    webBrowser.showToolBar = NO;
     
     [self presentViewController:webBrowser animated:YES completion:nil];
 }

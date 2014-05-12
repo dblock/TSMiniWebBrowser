@@ -59,9 +59,12 @@ typedef enum {
     BOOL showPageTitleOnTitleBar;
     BOOL showReloadButton;
     BOOL showActionButton;
+    BOOL showToolBar;
+    BOOL opaque;
     UIBarStyle barStyle;
     UIStatusBarStyle statusBarStyle;
 	UIColor *barTintColor;
+	UIColor *backgroundColor;
     NSString *modalDismissButtonTitle;
     NSString *forcedTitleBarText;
     BOOL _hideTopBarAndBottomBarOnScrolling;
@@ -82,6 +85,7 @@ typedef enum {
 @property (nonatomic, assign) BOOL showPageTitleOnTitleBar;
 @property (nonatomic, assign) BOOL showReloadButton;
 @property (nonatomic, assign) BOOL showActionButton;
+@property (nonatomic, assign) BOOL showToolBar;
 @property (nonatomic, assign) UIBarStyle barStyle;
 @property (nonatomic, assign) UIStatusBarStyle statusBarStyle;
 @property (nonatomic, strong) UIColor *barTintColor;
@@ -91,6 +95,8 @@ typedef enum {
 @property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForTopBar;
 @property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForBottomBar;
 @property (nonatomic, assign) BOOL hideTopBarAndBottomBarOnScrolling;
+@property (nonatomic, strong) UIColor *backgroundColor;
+@property (nonatomic, assign) BOOL opaque;
 
 // Public Methods
 - (id)initWithUrl:(NSURL*)url;

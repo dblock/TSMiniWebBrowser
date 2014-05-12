@@ -1,3 +1,7 @@
+### Next
+
+* Added `TSMiniWebBrowser.showToolBar`, `opaque` and `backgroundColor` - [@dblock](https://github.com/dblock).
+
 ### 1.1 (5/12/2014)
 
 * Initial maintined CocoaPods release, fork off [DZamataev/DZTSMiniWebBrowser](https://github.com/DZamataev/DZTSMiniWebBrowser) and [tonisalae/TSMiniWebBrowser](https://github.com/tonisalae/TSMiniWebBrowser) - [@dblock](https://github.com/dblock).
