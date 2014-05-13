@@ -20,6 +20,10 @@ beforeEach(^{
     window.rootViewController = webBrowser;
 });
 
+it(@"sets url", ^{
+    expect(webBrowser.currentURL).to.equal([NSURL URLWithString:@"http://www.example.org/"]);
+});
+
 it(@"modal style", ^AsyncBlock {
     webBrowser.mode = TSMiniWebBrowserModeModal;
     webBrowser.barStyle = UIBarStyleBlack;

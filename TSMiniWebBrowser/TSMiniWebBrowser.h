@@ -41,7 +41,7 @@ typedef enum {
 
 @interface TSMiniWebBrowser : UIViewController <UIWebViewDelegate, UIActionSheetDelegate> {
     // URL
-    NSURL *urlToLoad;
+    NSURL *currentURL;
     
     // Layout
     UIWebView *webView;
@@ -91,7 +91,7 @@ typedef enum {
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) NSString *modalDismissButtonTitle;
 @property (nonatomic, strong) NSString *domainLockList;
-@property (nonatomic, strong) NSString *currentURL;
+@property (nonatomic, strong) NSURL *currentURL;
 @property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForTopBar;
 @property (nonatomic, strong) DZScrollingInspector *scrollingInspectorForBottomBar;
 @property (nonatomic, assign) BOOL hideTopBarAndBottomBarOnScrolling;

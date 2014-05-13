@@ -290,7 +290,7 @@ enum actionSheetButtonIndex {
     webView.opaque = opaque;
     
     // Load the URL in the webView
-    NSURLRequest *request = [self requestWithURL:urlToLoad];
+    NSURLRequest *request = [self requestWithURL:currentURL];
     [webView loadRequest:request];
 }
 
@@ -300,7 +300,7 @@ enum actionSheetButtonIndex {
     self = [self init];
     if (!self) { return nil; };
 
-    urlToLoad = url;
+    currentURL = url;
     
     // Defaults
     mode = TSMiniWebBrowserModeNavigation;
@@ -485,16 +485,16 @@ enum actionSheetButtonIndex {
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == [actionSheet cancelButtonIndex]) return;
     
-    NSURL *theURL = [webView.request URL];
-    if (theURL == nil || [theURL isEqual:[NSURL URLWithString:@""]]) {
-        theURL = urlToLoad;
+    NSURL *url = [webView.request URL];
+    if (url == nil || [url isEqual:[NSURL URLWithString:@""]]) {
+        url = currentURL;
     }
     
     if (buttonIndex == kSafariButtonIndex) {
-        [[UIApplication sharedApplication] openURL:theURL];
+        [[UIApplication sharedApplication] openURL:url];
     }
     else if (buttonIndex == kChromeButtonIndex) {
-        NSString *scheme = theURL.scheme;
+        NSString *scheme = url.scheme;
         
         // Replace the URL Scheme with the Chrome equivalent.
         NSString *chromeScheme = nil;
@@ -506,7 +506,7 @@ enum actionSheetButtonIndex {
         
         // Proceed only if a valid Google Chrome URI Scheme is available.
         if (chromeScheme) {
-            NSString *absoluteString = [theURL absoluteString];
+            NSString *absoluteString = [url absoluteString];
             NSRange rangeForScheme = [absoluteString rangeOfString:@":"];
             NSString *urlNoScheme = [absoluteString substringFromIndex:rangeForScheme.location];
             NSString *chromeURLString = [chromeScheme stringByAppendingString:urlNoScheme];
@@ -551,7 +551,7 @@ enum actionSheetButtonIndex {
 
 - (void)loadURL:(NSURL*)url {
     if (!webView) {
-        urlToLoad = url;
+        currentURL = url;
         [self initWebView];
     } else {
         NSURLRequest *request = [self requestWithURL:url];
@@ -579,7 +579,7 @@ enum actionSheetButtonIndex {
 		} else {
             if (domainLockList == nil || [domainLockList isEqualToString:@""]) {
 				if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-					currentURL = request.URL.absoluteString;
+					currentURL = request.URL;
 				}
                 return YES;
             } else {
@@ -597,7 +597,7 @@ enum actionSheetButtonIndex {
                     return NO;
                 } else {
 					if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-						currentURL = request.URL.absoluteString;
+						currentURL = request.URL;
 					}
                     return YES;
                 }
