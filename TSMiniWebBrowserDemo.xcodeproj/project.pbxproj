@@ -13,6 +13,9 @@
 		3C26E12819211C1E007ECC04 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F69CDB414C6339C00BB6C57 /* UIKit.framework */; };
 		3C26E12E19211C1E007ECC04 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C26E12C19211C1E007ECC04 /* InfoPlist.strings */; };
 		3C26E13819211EE8007ECC04 /* ViewControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C26E13719211EE8007ECC04 /* ViewControllerTests.m */; };
+		3C2E6C56192256B1009DAB28 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 3C2E6C55192256B1009DAB28 /* CHANGELOG.md */; };
+		3C2E6C58192256BA009DAB28 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 3C2E6C57192256BA009DAB28 /* README.md */; };
+		3C2E6C5A192256CB009DAB28 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 3C2E6C59192256CB009DAB28 /* Podfile */; };
 		3C4EF40719214427003FF562 /* TSMiniWebBrowserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4EF40619214427003FF562 /* TSMiniWebBrowserTests.m */; };
 		3C4EF40B19216C32003FF562 /* Specta+Sleep.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4EF40A19216C32003FF562 /* Specta+Sleep.m */; };
 		54226ED8130B464AB0B1B23D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5F7EA42AA0D41A28BC9AA50 /* libPods.a */; };
@@ -51,6 +54,9 @@
 		3C26E12D19211C1E007ECC04 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3C26E13119211C1E007ECC04 /* TSMiniWebBrowserDemoTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TSMiniWebBrowserDemoTests-Prefix.pch"; sourceTree = "<group>"; };
 		3C26E13719211EE8007ECC04 /* ViewControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerTests.m; sourceTree = "<group>"; };
+		3C2E6C55192256B1009DAB28 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
+		3C2E6C57192256BA009DAB28 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		3C2E6C59192256CB009DAB28 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		3C4EF40619214427003FF562 /* TSMiniWebBrowserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMiniWebBrowserTests.m; sourceTree = "<group>"; };
 		3C4EF40919216C32003FF562 /* Specta+Sleep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Specta+Sleep.h"; sourceTree = "<group>"; };
 		3C4EF40A19216C32003FF562 /* Specta+Sleep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Specta+Sleep.m"; sourceTree = "<group>"; };
@@ -138,6 +144,9 @@
 		6F69CDA514C6339C00BB6C57 = {
 			isa = PBXGroup;
 			children = (
+				3C2E6C59192256CB009DAB28 /* Podfile */,
+				3C2E6C57192256BA009DAB28 /* README.md */,
+				3C2E6C55192256B1009DAB28 /* CHANGELOG.md */,
 				E2EC79A1161033B2002A923D /* Default-568h@2x.png */,
 				6F69CE4714C6E89600BB6C57 /* icon@2x.png */,
 				6F69CE4514C6E89300BB6C57 /* icon.png */,
@@ -294,10 +303,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C2E6C58192256BA009DAB28 /* README.md in Resources */,
 				6F69CDBF14C6339C00BB6C57 /* InfoPlist.strings in Resources */,
+				3C2E6C56192256B1009DAB28 /* CHANGELOG.md in Resources */,
 				6F69CDCB14C6339C00BB6C57 /* ViewController.xib in Resources */,
 				6F69CE4614C6E89300BB6C57 /* icon.png in Resources */,
 				6F69CE4814C6E89600BB6C57 /* icon@2x.png in Resources */,
+				3C2E6C5A192256CB009DAB28 /* Podfile in Resources */,
 				6F96DB7614E014620088FAFB /* first.png in Resources */,
 				6F96DB7714E014620088FAFB /* first@2x.png in Resources */,
 				6F96DB7814E014620088FAFB /* second.png in Resources */,

@@ -99,7 +99,8 @@ typedef enum {
 @property (nonatomic, assign) BOOL opaque;
 
 // Public Methods
-- (id)initWithUrl:(NSURL*)url;
+- (id)initWithURL:(NSURL*)url;
 - (void)setFixedTitleBarText:(NSString*)newTitleBarText;
 - (void)loadURL:(NSURL*)url;
+- (NSURLRequest *)requestWithURL:(NSURL *)url;
 @end

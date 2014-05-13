@@ -1,6 +1,8 @@
 ### Next
 
-* Added `TSMiniWebBrowser.showToolBar`, `opaque` and `backgroundColor` - [@dblock](https://github.com/dblock).
+* Added `TSMiniWebBrowser:showToolBar`, `opaque` and `backgroundColor` - [@dblock](https://github.com/dblock).
+* Renamed `TSMiniWebBrowser:initWithUrl` to `initWithURL` - [@dblock](https://github.com/dblock).
+* Exposed `TSMiniWebBrowser:requestWithURL:(NSURL *)url` for subclasses of `TSMiniWebBrowser` - [@dblock](https://github.com/dblock).
 
 ### 1.1 (5/12/2014)
 

@@ -16,7 +16,7 @@ __block TSMiniWebBrowser *webBrowser;
 beforeEach(^{
     window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     NSURL *url = [NSURL URLWithString:@"http://www.example.org/"];
-    webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:url];
+    webBrowser = [[TSMiniWebBrowser alloc] initWithURL:url];
     window.rootViewController = webBrowser;
 });
 

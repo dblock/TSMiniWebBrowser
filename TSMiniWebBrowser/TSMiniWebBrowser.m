@@ -290,13 +290,13 @@ enum actionSheetButtonIndex {
     webView.opaque = opaque;
     
     // Load the URL in the webView
-    NSURLRequest *requestObj = [NSURLRequest requestWithURL:urlToLoad];
-    [webView loadRequest:requestObj];
+    NSURLRequest *request = [self requestWithURL:urlToLoad];
+    [webView loadRequest:request];
 }
 
 #pragma mark -
 
-- (id)initWithUrl:(NSURL*)url {
+- (id)initWithURL:(NSURL*)url {
     self = [self init];
     if (!self) { return nil; };
 
@@ -554,8 +554,14 @@ enum actionSheetButtonIndex {
         urlToLoad = url;
         [self initWebView];
     } else {
-        [webView loadRequest: [NSURLRequest requestWithURL: url]];
+        NSURLRequest *request = [self requestWithURL:url];
+        [webView loadRequest:request];
     }
+}
+
+- (NSURLRequest *)requestWithURL:(NSURL *)url
+{
+    return [NSURLRequest requestWithURL: url];
 }
 
 #pragma mark - UIWebViewDelegate

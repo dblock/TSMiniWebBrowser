@@ -39,14 +39,14 @@ TSMiniWebBrowser **supports 3 presentation modes**:
 Create and display the browser with defaults:
 
 ```objc
-TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithURL:[NSURL URLWithString:@"http://indiedevstories.com"]];
 [self.navigationController pushViewController:webBrowser animated:YES];
 ```
 
 Try the [TSMiniWebBrowserDemo](TSMiniWebBrowserDemo) application. To test the tab bar mode go to the `application: didFinishLaunchingWithOptions:` method in `AppDelegate.m` and set the `BOOL wantTabBarDemo = NO;` value to `YES`.
 
 ```objc
-TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://indiedevstories.com"]];
+TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithURL:[NSURL URLWithString:@"http://indiedevstories.com"]];
 webBrowser.showURLStringOnActionSheetTitle = YES;
 webBrowser.showPageTitleOnTitleBar = YES;
 webBrowser.showActionButton = YES;
