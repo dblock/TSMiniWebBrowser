@@ -1,6 +1,6 @@
 workspace 'TSMiniWebBrowser'
 
-pod 'TSMiniWebBrowser', :path => 'TSMiniWebBrowser.podspec'
+pod 'TSMiniWebBrowser@dblock', :path => 'TSMiniWebBrowser@dblock.podspec'
 
 xcodeproj 'TSMiniWebBrowserDemo.xcodeproj'
 

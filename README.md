@@ -34,6 +34,12 @@ TSMiniWebBrowser **supports 3 presentation modes**:
 * **Modal mode**. Using this mode you can present the browser modally. A title bar with a dismiss button will be automatically added.
 * **Tab bar mode**. Using this mode you can show the browser as a tab of a tab bar view controller. The toolbar with the navigation controls will be positioned at the top of the view automatically.
 
+## Install
+
+```
+pod 'TSMiniWebBrowser@dblock', '~> 1.1'
+```
+
 ## Usage
 
 Create and display the browser with defaults:
