@@ -263,7 +263,6 @@ enum actionSheetButtonIndex {
     if(self.mode == TSMiniWebBrowserModeNavigation) {
         if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
             // On iOS7 the webview can be seen through the navigationbar
-            // TODO: perform a test on iOS 7
         } else {
             // On iOS below 7 we should make webView be under the navigationbar
             CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
@@ -271,16 +270,14 @@ enum actionSheetButtonIndex {
             webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
         }
     }
-    
+
     _webView = [[UIWebView alloc] initWithFrame:webViewFrame];
+    [self.view addSubview:self.webView];
+
     self.webView.scrollView.contentInset = webViewContentInset;
     self.webView.scrollView.scrollIndicatorInsets = webViewScrollIndicatorsInsets;
-    
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:self.webView];
-    
     self.webView.scalesPageToFit = YES;
-    
     self.webView.delegate = self;
     
     if (self.backgroundColor) {
@@ -593,8 +590,8 @@ enum actionSheetButtonIndex {
         return NO;
     } else {
 		if ([[request.URL absoluteString] hasPrefix:@"http://www.youtube.com/v/"] ||
-			[[request.URL absoluteString] hasPrefix:@"http://itunes.apple.com/"] ||
-			[[request.URL absoluteString] hasPrefix:@"http://phobos.apple.com/"]) {
+            [[request.URL host] isEqualToString:@"itunes.apple.com"] ||
+            [[request.URL host] isEqualToString:@"phobos.apple.com"]) {
 			[[UIApplication sharedApplication] openURL:request.URL];
 			return NO;
 		} else {
