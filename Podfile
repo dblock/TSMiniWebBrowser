@@ -2,6 +2,8 @@ workspace 'TSMiniWebBrowser'
 
 xcodeproj 'TSMiniWebBrowserDemo.xcodeproj'
 
+pod 'TSMiniWebBrowser@dblock', :path => 'TSMiniWebBrowser@dblock.podspec'
+
 target 'TSMiniWebBrowserDemoTests' do
   pod 'TSMiniWebBrowser@dblock', :path => 'TSMiniWebBrowser@dblock.podspec'
   pod 'Specta', '0.2.1'
