@@ -23,6 +23,6 @@ SPEC CHECKSUMS:
   EXPMatchers+FBSnapshotTest: cf5bf37817741d89bd3a3ff80be7ff417692ab7d
   FBSnapshotTestCase: 188c80bfcb72e744eb0b99d45989d12687c40cf8
   Specta: 2d06220591110c6d9757d8be8ecf8e63aa40dc2a
-  TSMiniWebBrowser@dblock: 91e676346c66b8f42b59256c1feccdc0822f98c0
+  TSMiniWebBrowser@dblock: eb2f9c5eafa37f548ec0b9983ebf34db065dc607
 
 COCOAPODS: 0.32.1

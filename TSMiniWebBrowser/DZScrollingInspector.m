@@ -8,9 +8,26 @@
 
 #import "DZScrollingInspector.h"
 
+@interface DZScrollingInspector ()
+@property(nonatomic, weak, readonly) UIScrollView *scrollView;
+@property(nonatomic, weak, readonly) NSObject *targetObject;
+@property(nonatomic, strong, readonly) NSString *targetFramePropertyKeyPath;
+@property(nonatomic, assign, readonly) CGFloat targetFramePropertyInitialValue;
+@property(nonatomic, assign, readonly) BOOL isAnimatingTargetObject;
+@property(nonatomic, strong, readonly) NSString *insetKeypath;
+@property(nonatomic, strong, readonly) NSString *offsetKeypath;
+@property(nonatomic, assign, readonly) CGFloat inset;
+@property(nonatomic, assign, readonly) CGFloat offset;
+@property(nonatomic, assign, readonly) BOOL isSuspended;
+@end
+
 @implementation DZScrollingInspector
 
-@synthesize limits = _limits;
+#define DZScrollingInspector_CONTENT_OFFSET_KEYPATH @"contentOffset"
+#define DZScrollingInspector_CONTENT_INSET_KEYPATH @"contentInset"
+#define DZScrollingInspector_FRAME_KEYPATH @"frame"
+#define DZScrollingInspector_PAN_STATE_KEYPATH @"pan.state"
+#define DZScrollingInspector_ANIMATION_DURATION_PER_ONE_PIXEL 0.0068181818f
 
 - (id)initWithObservedScrollView:(UIScrollView *)scrollView
                 andOffsetKeyPath:(NSString *)offsetKeyPath
@@ -19,51 +36,52 @@
    andTargetFramePropertyKeyPath:(NSString *)keypath
                        andLimits:(DZScrollingInspectorTwoOrientationsLimits)limits
 {
-    if (self = [super init])
-    {
-        // defaults
-        _isSuspended = NO;
-        _isAnimatingTargetObject = NO;
-        
-        // arguments to properties
-        _scrollView = scrollView;
-        _targetObject = target;
-        _targetFramePropertyKeyPath = keypath;
-        _limits = limits;
-        _offsetKeypath = offsetKeyPath;
-        _insetKeypath = insetKeyPath;
-        
-        // get more parameters from target
-        _offset = [DZScrollingInspector contentOffsetValueForKey:offsetKeyPath fromObject:scrollView];
-        _inset = [DZScrollingInspector contentInsetValueForKey:insetKeyPath fromObject:scrollView];
-        
-        _targetFramePropertyInitialValue = [self getTargetCurrentValueForKeypath];
-        
-        [self registerAsObserver];
-    }
+    self = [super init];
+    if (!self) return nil;
+
+    // defaults
+    _isSuspended = NO;
+    _isAnimatingTargetObject = NO;
+    
+    // arguments to properties
+    _scrollView = scrollView;
+    _targetObject = target;
+    _targetFramePropertyKeyPath = keypath;
+    _limits = limits;
+    _offsetKeypath = offsetKeyPath;
+    _insetKeypath = insetKeyPath;
+    
+    // get more parameters from target
+    _offset = [DZScrollingInspector contentOffsetValueForKey:offsetKeyPath fromObject:scrollView];
+    _inset = [DZScrollingInspector contentInsetValueForKey:insetKeyPath fromObject:scrollView];
+    
+    _targetFramePropertyInitialValue = [self targetCurrentValueForKeypath];
+    
+    [self registerAsObserver];
     return self;
 }
 
 // Apple documentation about the observing https://developer.apple.com/library/ios/DOCUMENTATION/Cocoa/Conceptual/KeyValueObserving/Articles/KVOBasics.html
-- (void)registerAsObserver {
+- (void)registerAsObserver
+{
     /*
      Register self to receive change notifications for the "_keypath_" property of
      the 'scrollView' object and specify that both the old and new values of "_keypath_"
      should be provided in the observe… method.
      */
-    [_scrollView addObserver:self
+    [self.scrollView addObserver:self
                   forKeyPath: DZScrollingInspector_CONTENT_OFFSET_KEYPATH
                  options:(NSKeyValueObservingOptionNew |
                           NSKeyValueObservingOptionOld)
                  context:NULL];
     
-    [_scrollView addObserver:self
+    [self.scrollView addObserver:self
                   forKeyPath: DZScrollingInspector_CONTENT_INSET_KEYPATH
                      options:(NSKeyValueObservingOptionNew |
                               NSKeyValueObservingOptionOld)
                      context:NULL];
     
-    [_scrollView addObserver:self
+    [self.scrollView addObserver:self
                   forKeyPath: DZScrollingInspector_PAN_STATE_KEYPATH
                      options:(NSKeyValueObservingOptionNew |
                               NSKeyValueObservingOptionOld)
@@ -73,8 +91,8 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
-                       context:(void *)context {
-    
+                       context:(void *)context
+{
     CGFloat offset = 0.0f;
     CGFloat inset = 0.0f;
     
@@ -87,7 +105,7 @@
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
         offset = [DZScrollingInspector contentOffsetValueForKey:_offsetKeypath fromCGPoint:newValue.CGPointValue];
         
-        if (offset != _offset)
+        if (offset != self.offset)
             offsetChanged = YES;
     }
     
@@ -95,9 +113,9 @@
     if ([keyPath isEqual:DZScrollingInspector_CONTENT_INSET_KEYPATH]) {
         NSValue *newValue = [change objectForKey:NSKeyValueChangeNewKey];
         
-        inset = [DZScrollingInspector contentInsetValueForKey:_insetKeypath fromUIEdgeInsets:newValue.UIEdgeInsetsValue];
+        inset = [DZScrollingInspector contentInsetValueForKey:self.insetKeypath fromUIEdgeInsets:newValue.UIEdgeInsetsValue];
         
-        if (inset != _inset)
+        if (inset != self.inset)
             insetChanged = YES;
     }
     
@@ -125,37 +143,30 @@
     }
     
     if (offsetChanged) {
-        inset = _inset;
-        DZScrollingInspectorLog(@"new offset: %f", offset);
+        inset = self.inset;
     }
+
     if (insetChanged) {
-        offset = _offset;
-        DZScrollingInspectorLog(@"new inset: %f", inset);
+        offset = self.offset;
     }
     
     // reaction
-    if (!_isSuspended) {
+    if (!self.isSuspended) {
         if (insetChanged || offsetChanged) {
-            
-            if ((_scrollView.isDragging && !_isAnimatingTargetObject) ||
-                (- offset < _inset && !_isAnimatingTargetObject)) {
+            if ((self.scrollView.isDragging && !self.isAnimatingTargetObject) ||
+                (- offset < self.inset && !self.isAnimatingTargetObject)) {
                 [self assumeShiftDeltaAndApplyToTargetAccordingToOffset:offset andInset:inset];
             }
-        }
-        else if (startedDragging || endedDragging) {
-            
+        } else if (startedDragging || endedDragging) {
             BOOL scrollingBeyondBounds = NO;
-            if (_offset < 0 && -_offset < _inset) {
+            if (self.offset < 0 && - self.offset < self.inset) {
                 scrollingBeyondBounds = YES;
             }
-            
-            if (endedDragging && ![self isLimitForCurrentInterfaceOrientationReached] && !scrollingBeyondBounds && !_isAnimatingTargetObject) {
+            if (endedDragging && !self.isLimitForCurrentInterfaceOrientationReached && !scrollingBeyondBounds && !self.isAnimatingTargetObject) {
                 [self animateTargetToReachLimitForCurrentDirection];
             }
         }
     }
-    
-    
     
     // set stored values
     if (offsetChanged) {
@@ -164,47 +175,34 @@
     if (insetChanged) {
         _inset = inset;
     }
-    
-    /*
-     Be sure to call the superclass's implementation *if it implements it*.
-     NSObject does not implement the method.
-     
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
-     */
 }
 
-- (void)unregisterAsObserver {
-    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_OFFSET_KEYPATH];
-    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
-    [_scrollView removeObserver:self forKeyPath:DZScrollingInspector_PAN_STATE_KEYPATH];
+- (void)unregisterAsObserver
+{
+    [self.scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_OFFSET_KEYPATH];
+    [self.scrollView removeObserver:self forKeyPath:DZScrollingInspector_CONTENT_INSET_KEYPATH];
+    [self.scrollView removeObserver:self forKeyPath:DZScrollingInspector_PAN_STATE_KEYPATH];
 }
 
 - (void)assumeShiftDeltaAndApplyToTargetAccordingToOffset:(CGFloat)newOffset andInset:(CGFloat)newInset
 {
-    
-    
-        
     // calculate movement delta
-    CGFloat delta = (newInset + newOffset) - (_inset + _offset);
+    CGFloat delta = (newInset + newOffset) - (self.inset + self.offset);
     
-    CGFloat existingValue = [self getTargetCurrentValueForKeypath];
+    CGFloat existingValue = self.targetCurrentValueForKeypath;
     
     BOOL existingValuePassesLimitation = NO;
     BOOL scrollingBeyondBounds = NO; // means bouncing
     CGFloat directionCoefficient = 1.0f;
     
-    DZScrollingInspectorLimit l = [self limitForCurrentInterfaceOrientation];
+    DZScrollingInspectorLimit l = self.limitForCurrentInterfaceOrientation;
     
     if (l.min < l.max &&
         existingValue >= l.min && existingValue <= l.max) {
         existingValuePassesLimitation = YES;
         directionCoefficient = 1.0f;
-    }
-    else if (l.min > l.max &&
-         existingValue <= l.min && existingValue >= l.max) {
+    } else if (l.min > l.max &&
+        existingValue <= l.min && existingValue >= l.max) {
         existingValuePassesLimitation = YES;
         directionCoefficient = -1.0f;
     }
@@ -213,13 +211,9 @@
         scrollingBeyondBounds = YES;
     }
     
-    
     if (existingValuePassesLimitation && !scrollingBeyondBounds) {
         CGFloat shiftedValue = existingValue + delta * directionCoefficient;
         shiftedValue = [DZScrollingInspector clampFloat:shiftedValue withMinimum:l.min andMaximum:l.max];
-        
-        
-        
         if (existingValue != shiftedValue) {
             [self setTargetValueForKeypathWithNewValue:shiftedValue];
         }
@@ -230,15 +224,12 @@
 {
     NSNumber *targetValueThatMatchesLimit = nil;
     DZScrollingInspectorLimit currentLimit = [self limitForCurrentInterfaceOrientation];
-    CGFloat currentTargetValue = [self getTargetCurrentValueForKeypath];
+    CGFloat currentTargetValue = [self targetCurrentValueForKeypath];
     CGFloat lowerLimit = MIN(currentLimit.min, currentLimit.max);
     CGFloat higherLimit = MAX(currentLimit.min, currentLimit.max);
     CGFloat distance = fabsf(higherLimit - lowerLimit);
     
-    
-    
     CGFloat halfPassed = lowerLimit + distance/2;
-    
     
     CGFloat distanceLeft = 0.0f;
     
@@ -251,8 +242,7 @@
             targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.max];
             distanceLeft = currentLimit.max - currentTargetValue;
         }
-    }
-    else {
+    } else {
         if (currentTargetValue < halfPassed)  {
             targetValueThatMatchesLimit = [NSNumber numberWithFloat:currentLimit.max];
             distanceLeft = currentTargetValue - currentLimit.max;
@@ -263,12 +253,10 @@
         }
     }
     
-    
     CGFloat animationDuration = distanceLeft * DZScrollingInspector_ANIMATION_DURATION_PER_ONE_PIXEL;
     
-    
     if (targetValueThatMatchesLimit) {
-        if ([_targetObject isKindOfClass:[UIView class]]) {
+        if ([self.targetObject isKindOfClass:[UIView class]]) {
             [UIView animateWithDuration:animationDuration
                                   delay:0.0f
                                 options:UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionBeginFromCurrentState
@@ -285,7 +273,7 @@
 
 - (BOOL)isLimitForCurrentInterfaceOrientationReached
 {
-    CGFloat currentTargetValue = [self getTargetCurrentValueForKeypath];
+    CGFloat currentTargetValue = self.targetCurrentValueForKeypath;
     DZScrollingInspectorLimit currentLimit = [self limitForCurrentInterfaceOrientation];
     return currentTargetValue == currentLimit.min || currentTargetValue == currentLimit.max;
 }
@@ -296,50 +284,55 @@
     return UIInterfaceOrientationIsPortrait(currentInterfaceOrientation) ? _limits.portraitLimit : _limits.landscapeLimit;
 }
 
-- (CGFloat)getTargetCurrentValueForKeypath
+- (CGFloat)targetCurrentValueForKeypath
 {
-    return [DZScrollingInspector frameValueForKey:_targetFramePropertyKeyPath fromObject:_targetObject];
+    return [DZScrollingInspector frameValueForKey:self.targetFramePropertyKeyPath fromObject:self.targetObject];
 }
 
 - (void)setTargetValueForKeypathWithNewValue:(CGFloat)newValue
 {
-    [DZScrollingInspector setFrameValue:newValue forKey:_targetFramePropertyKeyPath forObject:_targetObject];
+    [DZScrollingInspector setFrameValue:newValue forKey:self.targetFramePropertyKeyPath forObject:self.targetObject];
 }
 
--(void)dealloc
+- (void)dealloc
 {
     [self unregisterAsObserver];
 }
 
 #pragma mark - Public methods
 
--(void)suspend
+- (void)suspend
 {
     _isSuspended = YES;
 }
 
--(void)resume
+- (void)resume
 {
     _isSuspended = NO;
 }
 
--(void)resetTargetToMinLimit
+- (void)resetTargetToMinLimit
 {
-    [self setTargetValueForKeypathWithNewValue:[self limitForCurrentInterfaceOrientation].min];
+    [self setTargetValueForKeypathWithNewValue:self.limitForCurrentInterfaceOrientation.min];
 }
 
 #pragma mark - Static helpers
+
 /*
  clamps the value to lie betweem minimum and maximum;
  if minimum is smaller than maximum - they will be swapped;
  */
-+(CGFloat)clampFloat:(CGFloat)value withMinimum:(CGFloat)min andMaximum:(CGFloat)max {
++ (CGFloat)clampFloat:(CGFloat)value withMinimum:(CGFloat)min andMaximum:(CGFloat)max {
     CGFloat realMin = min < max ? min : max;
     CGFloat realMax = max >= min ? max : min;
     return MAX(realMin, MIN(realMax, value));
 }
 
-DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLimitsMake(CGFloat portraitMin, CGFloat portraitMax, CGFloat landscapeMin, CGFloat landscapeMax) {
++ (DZScrollingInspectorTwoOrientationsLimits) DZScrollingInspectorTwoOrientationsLimitsMake:(CGFloat)portraitMin
+                                                                               portraitMax:(CGFloat)portraitMax
+                                                                              landscapeMin:(CGFloat)landscapeMin
+                                                                              landscapeMax:(CGFloat)landscapeMax
+{
     DZScrollingInspectorLimit portraitLimit;
     portraitLimit.min = portraitMin;
     portraitLimit.max = portraitMax;
@@ -355,17 +348,17 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     return result;
 }
 
-
 /*
  possible keys:
  x
  y
  */
-+(CGFloat)contentOffsetValueForKey:(NSString*)key fromObject:(id)object
++ (CGFloat)contentOffsetValueForKey:(NSString*)key fromObject:(id)object
 {
     if (!object) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'object' must be non-nil"];
     }
+    
     if (!key) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'key' must be non-nil"];
     }
@@ -403,6 +396,7 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     if (!object) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'object' must be non-nil"];
     }
+    
     if (!key) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'key' must be non-nil"];
     }
@@ -443,6 +437,7 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     if (!object) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'object' must be non-nil"];
     }
+    
     if (!key) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'key' must be non-nil"];
     }
@@ -488,15 +483,15 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
     
     NSNumber *frameValueNumber = foundNumber;
     
-    return frameValueNumber.floatValue;
-    
+    return frameValueNumber.floatValue;    
 }
 
-+(void)setFrameValue:(CGFloat)floatValueToSet forKey:(NSString*)key forObject:(id)object
++ (void)setFrameValue:(CGFloat)floatValueToSet forKey:(NSString*)key forObject:(id)object
 {
     if (!object) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'object' must be non-nil"];
     }
+    
     if (!key) {
         [NSException raise:NSInvalidArgumentException format:@"Argument 'key' must be non-nil"];
     }
@@ -537,4 +532,5 @@ DZScrollingInspectorTwoOrientationsLimits DZScrollingInspectorTwoOrientationsLim
         [NSException raise:NSInvalidArgumentException format:@"Cannot find frame value for key '%@'",key];
     }
 }
+
 @end

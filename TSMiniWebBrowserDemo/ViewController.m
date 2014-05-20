@@ -35,14 +35,17 @@
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
-- (IBAction)openBrowserNavigationMode:(id)sender {
+- (IBAction)openBrowserNavigationMode:(id)sender
+{
     TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithURL:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
-//    webBrowser.showURLStringOnActionSheetTitle = YES;
-//    webBrowser.showPageTitleOnTitleBar = YES;
-//    webBrowser.showActionButton = YES;
-//    webBrowser.showReloadButton = YES;
-//    [webBrowser setFixedTitleBarText:@"Test Title Text"]; // This has priority over "showPageTitleOnTitleBar".
+
+    //    webBrowser.showURLStringOnActionSheetTitle = YES;
+    //    webBrowser.showPageTitleOnTitleBar = YES;
+    //    webBrowser.showActionButton = YES;
+    //    webBrowser.showReloadButton = YES;
+    //    [webBrowser setFixedTitleBarText:@"Test Title Text"]; // This has priority over "showPageTitleOnTitleBar".
+    
     webBrowser.mode = TSMiniWebBrowserModeNavigation;
     
     webBrowser.barStyle = UIBarStyleBlack;
@@ -50,7 +53,8 @@
     [self.navigationController pushViewController:webBrowser animated:YES];
 }
 
-- (IBAction)openBrowserModalMode:(id)sender {
+- (IBAction)openBrowserModalMode:(id)sender
+{
     TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithURL:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
     webBrowser.mode = TSMiniWebBrowserModeModal;
@@ -64,8 +68,8 @@
     [self presentViewController:webBrowser animated:YES completion:nil];
 }
 
-- (IBAction)openBrowserTabbarModeOne:(id)sender {
-    
+- (IBAction)openBrowserTabbarModeOne:(id)sender
+{
     TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithURL:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
     webBrowser.mode = TSMiniWebBrowserModeTabBar;
@@ -81,8 +85,8 @@
     
 }
 
-- (IBAction)openBrowserTabbarModeTwo:(id)sender {
-    
+- (IBAction)openBrowserTabbarModeTwo:(id)sender
+{
     TSMiniWebBrowser *webBrowser = [[TSMiniWebBrowser alloc] initWithURL:[NSURL URLWithString:DEMO_URL]];
     webBrowser.delegate = self;
     webBrowser.mode = TSMiniWebBrowserModeTabBar;
@@ -99,7 +103,8 @@
 
 #pragma mark - TSMiniWebBrowserDelegate
 
--(void) tsMiniWebBrowserDidDismiss {
+- (void)tsMiniWebBrowserDidDismiss
+{
     NSLog(@"TSMiniWebBrowser was dismissed");
 }
 

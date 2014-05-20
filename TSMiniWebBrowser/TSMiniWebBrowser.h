@@ -39,44 +39,7 @@ typedef enum {
     TSMiniWebBrowserModeTabBar,
 } TSMiniWebBrowserMode;
 
-@interface TSMiniWebBrowser : UIViewController <UIWebViewDelegate, UIActionSheetDelegate> {
-    // URL
-    NSURL *currentURL;
-    
-    // Layout
-    UIWebView *webView;
-    UIToolbar *toolBar;
-    UINavigationBar *navigationBarModal; // Only used in modal mode
-    
-    // Toolbar items
-    UIActivityIndicatorView *activityIndicator;
-    UIBarButtonItem *buttonGoBack;
-    UIBarButtonItem *buttonGoForward;
-    
-    // Customization
-    TSMiniWebBrowserMode mode;
-    BOOL showURLStringOnActionSheetTitle;
-    BOOL showPageTitleOnTitleBar;
-    BOOL showReloadButton;
-    BOOL showActionButton;
-    BOOL showToolBar;
-    BOOL opaque;
-    UIBarStyle barStyle;
-    UIStatusBarStyle statusBarStyle;
-	UIColor *barTintColor;
-	UIColor *backgroundColor;
-    NSString *modalDismissButtonTitle;
-    NSString *forcedTitleBarText;
-    BOOL _hideTopBarAndBottomBarOnScrolling;
-    
-    // State control
-    UIBarStyle originalBarStyle;
-    UIStatusBarStyle originalStatusBarStyle;
-    
-    // Scrolling inspectors
-    DZScrollingInspector *_scrollingInspectorForTopBar;
-    DZScrollingInspector *_scrollingInspectorForBottomBar;
-}
+@interface TSMiniWebBrowser : UIViewController <UIWebViewDelegate, UIActionSheetDelegate>
 
 @property (assign) id<TSMiniWebBrowserDelegate> delegate;
 
