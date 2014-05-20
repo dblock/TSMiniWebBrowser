@@ -1,3 +1,7 @@
+### Next
+
+* [#1](https://github.com/dblock/TSMiniWebBrowser/issues/1): Fixed up EmbeddedYoutubePatch demo - [@dblock](https://github.com/dblock).
+
 ### 1.1 (5/12/2014)
 
 * Initial maintained CocoaPods release, fork off [DZamataev/DZTSMiniWebBrowser](https://github.com/DZamataev/DZTSMiniWebBrowser) and [tonisalae/TSMiniWebBrowser](https://github.com/tonisalae/TSMiniWebBrowser) - [@dblock](https://github.com/dblock).

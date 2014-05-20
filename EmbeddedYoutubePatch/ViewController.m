@@ -9,7 +9,6 @@
 #import "ViewController.h"
 
 @implementation ViewController
-@synthesize modalWebViewPresented;
 
 #pragma mark - Embeeded Youtube video patch
 
@@ -29,7 +28,8 @@
     [self dismissModalViewControllerAnimated:animated];
 }
 
-- (void) viewDidAppear:(BOOL)animated {
+- (void) viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     if (self.modalWebViewPresented) {
         // Note: iOS thinks the previous modal view controller is displayed.
@@ -42,46 +42,13 @@
 
 #pragma mark - TSMiniWebBrowserDelegate
 
--(void) tsMiniWebBrowserDidDismiss {
+-(void) tsMiniWebBrowserDidDismiss
+{
     NSLog(@"browser dismissed");
     [self dismissModalWebViewController:YES]; // IMPORTANT!!!!!!
 }
 
 #pragma mark - View lifecycle
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	[super viewDidDisappear:animated];
-}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -91,8 +58,10 @@
 
 #pragma mark - Actions
 
-- (IBAction)buttonTouchUp:(id)sender {
-    webViewController = [[TSMiniWebBrowser alloc] initWithUrl:[NSURL URLWithString:@"http://www.xrel.to/movie/72308/Black-Gold.html#video=_KLQjS7egS4"]];
+- (IBAction)buttonTouchUp:(id)sender
+{
+    NSURL *url = [NSURL URLWithString:@"http://www.xrel.to/movie/72308/Black-Gold.html#video=_KLQjS7egS4"];
+    webViewController = [[TSMiniWebBrowser alloc] initWithURL:url];
     webViewController.mode = TSMiniWebBrowserModeModal;
     webViewController.delegate = self;
     [self presentModalWebViewController:YES];

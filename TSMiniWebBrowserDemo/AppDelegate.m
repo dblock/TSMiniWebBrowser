@@ -27,14 +27,8 @@
 #import "AppDelegate.h"
 
 #import "ViewController.h"
-#import "TSMiniWebBrowser.h"
 
 @implementation AppDelegate
-
-@synthesize window = _window;
-@synthesize viewController = _viewController;
-@synthesize navigationController = _navigationController;
-@synthesize tabBarController = _tabBarController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
