@@ -8,6 +8,7 @@ target 'TSMiniWebBrowserDemoTests' do
   pod 'Expecta', '0.3.0'
   pod 'FBSnapshotTestCase', '1.1'
   pod 'EXPMatchers+FBSnapshotTest', '1.1.0'
+  xcodeproj 'TSMiniWebBrowserDemo.xcodeproj'
 end
 
 target 'EmbeddedYoutubePatch' do
