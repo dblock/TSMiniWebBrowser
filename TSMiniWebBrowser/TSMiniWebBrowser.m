@@ -29,19 +29,19 @@
 
 @interface TSMiniWebBrowser ()
 // Toolbar items
-@property(readonly, strong) UIBarButtonItem *buttonGoBack;
-@property(readonly, strong) UIBarButtonItem *buttonGoForward;
-@property(readonly, strong) UIActivityIndicatorView *activityIndicator;
+@property(nonatomic, readonly, strong) UIBarButtonItem *buttonGoBack;
+@property(nonatomic, readonly, strong) UIBarButtonItem *buttonGoForward;
+@property(nonatomic, readonly, strong) UIActivityIndicatorView *activityIndicator;
 // Layout
-@property(readonly, strong) UIWebView *webView;
-@property(readonly, strong) UIToolbar *toolBar;
+@property(nonatomic, readonly, strong) UIWebView *webView;
+@property(nonatomic, readonly, strong) UIToolbar *toolBar;
 // Only used in modal mode
-@property(readonly, strong) UINavigationBar *navigationBarModal;
+@property(nonatomic, readonly, strong) UINavigationBar *navigationBarModal;
 // Customization
-@property(readonly, strong) NSString *forcedTitleBarText;
+@property(nonatomic, readonly, strong) NSString *forcedTitleBarText;
 // State control
-@property(readonly, assign) UIBarStyle originalBarStyle;
-@property(readonly, assign) UIStatusBarStyle originalStatusBarStyle;
+@property(nonatomic, readonly, assign) UIBarStyle originalBarStyle;
+@property(nonatomic, readonly, assign) UIStatusBarStyle originalStatusBarStyle;
 @end
 
 @implementation TSMiniWebBrowser
