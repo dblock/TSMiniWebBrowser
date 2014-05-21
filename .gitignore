@@ -21,3 +21,7 @@ UserInterfaceState.xcuserstate
 
 # CocoaPods
 Pods
+
+# RubyGems
+.bundle
+
