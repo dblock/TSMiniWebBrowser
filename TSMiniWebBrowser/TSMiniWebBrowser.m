@@ -36,7 +36,7 @@
 @property(nonatomic, readonly, strong) UIWebView *webView;
 @property(nonatomic, readonly, strong) UIToolbar *toolBar;
 // Only used in modal mode
-@property(nonatomic, readonly, strong) UINavigationBar *navigationBarModal;
+@property(nonatomic, readonly, strong) UINavigationBar *navigationBar;
 // Customization
 @property(nonatomic, readonly, strong) NSString *forcedTitleBarText;
 // State control
@@ -60,7 +60,7 @@ enum actionSheetButtonIndex {
 - (void)setTitleBarText:(NSString*)pageTitle
 {
     if (self.mode == TSMiniWebBrowserModeModal) {
-        self.navigationBarModal.topItem.title = pageTitle;
+        self.navigationBar.topItem.title = pageTitle;
     } else if (self.mode == TSMiniWebBrowserModeNavigation && pageTitle) {
         [[self navigationItem] setTitle:pageTitle];
     }
@@ -134,7 +134,7 @@ enum actionSheetButtonIndex {
             topBar = self.navigationController.navigationBar;
             break;
         case TSMiniWebBrowserModeModal:
-            topBar = self.navigationBarModal;
+            topBar = self.navigationBar;
             break;
         case TSMiniWebBrowserModeTabBar:
             topBar = self.toolBar;
@@ -173,21 +173,20 @@ enum actionSheetButtonIndex {
 #pragma mark - Init
 
 // This method is only used in modal mode
-- (void)initTitleBar
+- (void)initNavigationBar
 {
     UIBarButtonItem *buttonDone = [[UIBarButtonItem alloc] initWithTitle:self.modalDismissButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(dismissController)];
-    
     UINavigationItem *titleBar = [[UINavigationItem alloc] initWithTitle:@""];
     titleBar.leftBarButtonItem = buttonDone;
     
     CGFloat width = self.view.frame.size.width;
-    _navigationBarModal = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, width, kNavBarHeight)];
+    _navigationBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, width, kNavBarHeight)];
     //self.navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
-    self.navigationBarModal.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.navigationBarModal.barStyle = self.barStyle;
-    [self.navigationBarModal pushNavigationItem:titleBar animated:NO];
+    self.navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.navigationBar.barStyle = self.barStyle;
+    [self.navigationBar pushNavigationItem:titleBar animated:NO];
     
-    [self.view addSubview:self.navigationBarModal];
+    [self.view addSubview:self.navigationBar];
 }
 
 - (void)initToolBar
@@ -254,14 +253,14 @@ enum actionSheetButtonIndex {
 
 - (UIEdgeInsets)webViewContentInset
 {
-    UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(kNavBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
+    UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(self.showNavigationBar ? kNavBarHeight : 0, 0, self.showToolBar ? kToolBarHeight : 0, 0);
     if(self.mode == TSMiniWebBrowserModeNavigation) {
         if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
             // On iOS7 the webview can be seen through the navigationbar
         } else {
             // On iOS below 7 we should make webView be under the navigationbar
             CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
-            webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
+            webViewContentInset = UIEdgeInsetsMake(self.showNavigationBar ? navBarHeight : 0, 0, self.showToolBar ? kToolBarHeight : 0, 0);
         }
     }
     return webViewContentInset;
@@ -269,7 +268,7 @@ enum actionSheetButtonIndex {
 
 - (UIEdgeInsets)webViewScrollIndicatorsInsets
 {
-    return UIEdgeInsetsMake(kNavBarHeight, 0, 0, 0);
+    return UIEdgeInsetsMake(self.showNavigationBar ? kNavBarHeight : 0, 0, 0, 0);
 }
 
 - (void)initWebView
@@ -311,6 +310,7 @@ enum actionSheetButtonIndex {
     _showReloadButton = YES;
     _showActionButton = YES;
     _showToolBar = YES;
+    _showNavigationBar = YES;
     _modalDismissButtonTitle = NSLocalizedString(@"Done", nil);
     _barStyle = UIBarStyleDefault;
     _statusBarStyle = UIStatusBarStyleBlackOpaque;
@@ -352,8 +352,8 @@ enum actionSheetButtonIndex {
     }
     
     // Init title bar if presented modally
-    if (self.mode == TSMiniWebBrowserModeModal) {
-        [self initTitleBar];
+    if (self.mode == TSMiniWebBrowserModeModal && self.showNavigationBar) {
+        [self initNavigationBar];
     }
     
     if (self.hideTopBarAndBottomBarOnScrolling) {

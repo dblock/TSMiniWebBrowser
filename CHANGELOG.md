@@ -1,6 +1,7 @@
 ### Next
 
 * [#1](https://github.com/dblock/TSMiniWebBrowser/issues/1): Fixed up EmbeddedYoutubePatch demo - [@dblock](https://github.com/dblock).
+* Added `showNavigationBar` which controls whether the nav bar is shown in modal mode as well as navigation insets - [@dblock](https://github.com/dblock).
 
 ### 1.1 (5/12/2014)
 
