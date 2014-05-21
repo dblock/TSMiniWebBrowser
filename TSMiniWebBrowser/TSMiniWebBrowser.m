@@ -252,30 +252,34 @@ enum actionSheetButtonIndex {
 	[self.toolBar setTintColor:self.barTintColor];
 }
 
-- (void)initWebView
+- (UIEdgeInsets)webViewContentInset
 {
-    CGSize viewSize = self.view.frame.size;
-    
-    CGRect webViewFrame = CGRectMake(0, 0, viewSize.width, viewSize.height);
     UIEdgeInsets webViewContentInset = UIEdgeInsetsMake(kNavBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
-    UIEdgeInsets webViewScrollIndicatorsInsets = UIEdgeInsetsMake(kNavBarHeight, 0, 0, 0);
-    
     if(self.mode == TSMiniWebBrowserModeNavigation) {
         if (([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)) {
             // On iOS7 the webview can be seen through the navigationbar
         } else {
             // On iOS below 7 we should make webView be under the navigationbar
             CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
-            webViewFrame = CGRectMake(0, - navBarHeight, viewSize.width, viewSize.height+navBarHeight);
             webViewContentInset = UIEdgeInsetsMake(navBarHeight, 0, self.showToolBar ? kToolBarHeight : 0, 0);
         }
     }
+    return webViewContentInset;
+}
 
+- (UIEdgeInsets)webViewScrollIndicatorsInsets
+{
+    return UIEdgeInsetsMake(kNavBarHeight, 0, 0, 0);
+}
+
+- (void)initWebView
+{
+    CGRect webViewFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame));
     _webView = [[UIWebView alloc] initWithFrame:webViewFrame];
     [self.view addSubview:self.webView];
 
-    self.webView.scrollView.contentInset = webViewContentInset;
-    self.webView.scrollView.scrollIndicatorInsets = webViewScrollIndicatorsInsets;
+    self.webView.scrollView.contentInset = [self webViewContentInset];
+    self.webView.scrollView.scrollIndicatorInsets = [self webViewScrollIndicatorsInsets];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.scalesPageToFit = YES;
     self.webView.delegate = self;

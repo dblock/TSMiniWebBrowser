@@ -50,7 +50,6 @@
 
 /* Begin PBXFileReference section */
 		1CBB0ED8C5B648EAA5C54053 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
-		3C26E12419211C1D007ECC04 /* TSMiniWebBrowserDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TSMiniWebBrowserDemoTests.xctest; path = "/Users/dblock/source/TSMiniWebBrowser/dblock/build/Debug-iphoneos/TSMiniWebBrowserDemoTests.xctest"; sourceTree = "<absolute>"; };
 		3C26E12519211C1D007ECC04 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		3C26E12B19211C1E007ECC04 /* TSMiniWebBrowserDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TSMiniWebBrowserDemoTests-Info.plist"; sourceTree = "<group>"; };
 		3C26E12D19211C1E007ECC04 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -64,7 +63,8 @@
 		3C4EF40A19216C32003FF562 /* Specta+Sleep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Specta+Sleep.m"; sourceTree = "<group>"; };
 		3C6DBF9F192B731B00197F6D /* TSMiniWebBrowser@dblock.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TSMiniWebBrowser@dblock.podspec"; sourceTree = "<group>"; };
 		3C6DBFA1192B852B00197F6D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		6F69CDB014C6339C00BB6C57 /* TSMiniWebBrowserDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = TSMiniWebBrowserDemo.app; path = "/Users/dblock/source/TSMiniWebBrowser/dblock/build/Debug-iphoneos/TSMiniWebBrowserDemo.app"; sourceTree = "<absolute>"; };
+		3CBACA7B192CFCB900B6175B /* TSMiniWebBrowserDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = TSMiniWebBrowserDemo.app; path = "/Users/dblock/source/TSMiniWebBrowser/dblock/build/Debug-iphoneos/TSMiniWebBrowserDemo.app"; sourceTree = "<absolute>"; };
+		3CBACA7C192CFCB900B6175B /* TSMiniWebBrowserDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TSMiniWebBrowserDemoTests.xctest; path = "/Users/dblock/source/TSMiniWebBrowser/dblock/build/Debug-iphoneos/TSMiniWebBrowserDemoTests.xctest"; sourceTree = "<absolute>"; };
 		6F69CDB414C6339C00BB6C57 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		6F69CDB614C6339C00BB6C57 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6F69CDB814C6339C00BB6C57 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -233,7 +233,7 @@
 			);
 			name = TSMiniWebBrowserDemoTests;
 			productName = TSMiniWebBrowserDemoTests;
-			productReference = 3C26E12419211C1D007ECC04 /* TSMiniWebBrowserDemoTests.xctest */;
+			productReference = 3CBACA7C192CFCB900B6175B /* TSMiniWebBrowserDemoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		6F69CDAF14C6339C00BB6C57 /* TSMiniWebBrowserDemo */ = {
@@ -252,7 +252,7 @@
 			);
 			name = TSMiniWebBrowserDemo;
 			productName = TSMiniWebBrowserDemo;
-			productReference = 6F69CDB014C6339C00BB6C57 /* TSMiniWebBrowserDemo.app */;
+			productReference = 3CBACA7B192CFCB900B6175B /* TSMiniWebBrowserDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

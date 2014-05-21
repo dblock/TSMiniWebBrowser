@@ -49,6 +49,7 @@ typedef enum {
 @property (nonatomic, assign) BOOL showReloadButton;
 @property (nonatomic, assign) BOOL showActionButton;
 @property (nonatomic, assign) BOOL showToolBar;
+@property (nonatomic, assign) BOOL showNavigationBar;
 @property (nonatomic, assign) UIBarStyle barStyle;
 @property (nonatomic, assign) UIStatusBarStyle statusBarStyle;
 @property (nonatomic, strong) UIColor *barTintColor;
