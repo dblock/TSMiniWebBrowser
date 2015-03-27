@@ -164,9 +164,12 @@ enum actionSheetButtonIndex {
 }
 
 // Remove the webview delegate, because if you use this in a navigation controller, TSMiniWebBrowser can get deallocated while
-// the page is still loading and the web view will call its delegate.
+// the page is still loading and the web view will call its delegate and the same can occur where the DZScrollingInspectors
+// are still observing the scroll view while it's already being deallocated.
 - (void)dealloc
 {
+    self.scrollingInspectorForTopBar = nil;
+    self.scrollingInspectorForBottomBar = nil;
     [self.webView setDelegate:nil];
 }
 
