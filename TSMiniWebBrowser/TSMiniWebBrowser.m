@@ -209,16 +209,18 @@ enum actionSheetButtonIndex {
     self.toolBar.barStyle = self.barStyle;
     [self.view addSubview:_toolBar];
     
-    _buttonGoBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back_icon.png"] style:UIBarButtonItemStylePlain target:self action:@selector(backButtonTouchUp:)];
+    NSBundle *webBrowserBundle = [NSBundle bundleForClass:[TSMiniWebBrowser class]];
+    
+    _buttonGoBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back_icon.png" inBundle:webBrowserBundle compatibleWithTraitCollection:nil] style:UIBarButtonItemStylePlain target:self action:@selector(backButtonTouchUp:)];
     
     UIBarButtonItem *fixedSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedSpace.width = 30;
     
-    _buttonGoForward = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"forward_icon.png"] style:UIBarButtonItemStylePlain target:self action:@selector(forwardButtonTouchUp:)];
+    _buttonGoForward = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"forward_icon.png" inBundle:webBrowserBundle compatibleWithTraitCollection:nil] style:UIBarButtonItemStylePlain target:self action:@selector(forwardButtonTouchUp:)];
     
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    UIBarButtonItem *buttonReload = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reload_icon.png"] style:UIBarButtonItemStylePlain target:self action:@selector(reloadButtonTouchUp:)];
+    UIBarButtonItem *buttonReload = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reload_icon.png" inBundle:webBrowserBundle compatibleWithTraitCollection:nil] style:UIBarButtonItemStylePlain target:self action:@selector(reloadButtonTouchUp:)];
     
     UIBarButtonItem *fixedSpace2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedSpace2.width = 20;
